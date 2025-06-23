@@ -1,62 +1,33 @@
-# 🎾 RacketMatch
+<h1 align="center">🎾 RacketMatch</h1>
 
-**RacketMatch** is a mobile app and admin platform for managing padel and racket sports courts.
-
----
-
-## 📱 Mobile Application
-
-Built with:
-
-- React Native (Expo)
-- TypeScript
-- React Native Paper
-- Expo Router
-- Expo Vector Icons
-
-### Current Features
-
-- Lemonfit Padel club display page
-- Availability status, online players and club rating
-- Simulated data for development purposes
-- Local image loading via `require()`
-- Booking system (currently in development)
+<p align="center">
+  <b>Aplicação completa para marcar e gerir partidas de Ténis/Padel entre jogadores.</b><br/>
+  Projeto final de curso com Frontend (Mobile), Backend (API) e Painel Administrativo.
+</p>
 
 ---
 
-## 🖥️ Admin Panel (Backoffice)
+## 📚 Sumário
 
-Built with:
-
-- React + TypeScript
-- Vite
-- Tailwind CSS
-- Shadcn UI
-
-### Planned Features
-
-- Court management
-- Booking management
-- User management
-- Usage statistics and analytics
+- [📁 Estrutura](#-estrutura)
+- [🚀 Tecnologias](#-tecnologias)
+- [⚙️ Instalação Local](#️-instalação-local)
+- [📸 Demonstração](#-demonstração)
+- [🙋‍♂️ Autor](#-autor)
+- [📝 Licença](#-licença)
 
 ---
 
-## 🚀 Technologies
-
-- Expo SDK
-- React Native
-- TypeScript
-- GitHub version control
-- Metro Bundler
-- Firebase / Supabase (planned backend)
-
----
-
-## 🛠️ Run Locally
-
-### Mobile App:
+## 📁 Estrutura
 
 ```bash
-npm install
-npx expo start
+RacketMatch/
+│
+├── backend/              # API em Node.js
+│
+├── frontend/             # App React Native (Expo)
+│
+├── racketmatch-admin/    # Painel administrativo web
+│
+├── README.md
+└── .gitignore
