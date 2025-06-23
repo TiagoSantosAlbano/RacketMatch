@@ -23,23 +23,23 @@ Projeto final de curso com três frentes principais:
 
 ## 📁 Estrutura do Projeto
 
-O projeto está organizado em três diretórios principais:
+O repositório está dividido em três principais diretórios, cada um responsável por uma parte da aplicação:
 
-RacketMatch/
-│
-├── backend/ -> API em Node.js (Express, JWT, MongoDB)
-├── frontend/ -> Aplicação mobile em React Native (Expo)
-├── racketmatch-admin/ -> Painel administrativo web
-│
-├── README.md
-├── .gitignore
-└── package.json
+- **backend/**  
+  Contém a API REST desenvolvida em Node.js com Express. Responsável por autenticação, regras de negócio e integração com banco de dados (MongoDB).
 
-markdown
-Copiar
-Editar
+- **frontend/**  
+  Aplicação mobile criada com React Native e Expo. Interface voltada para os jogadores, com funcionalidades como marcação de partidas e visualização de histórico.
 
----
+- **racketmatch-admin/**  
+  Painel administrativo web desenvolvido com React e TypeScript. Permite o gerenciamento de usuários, partidas e estatísticas da plataforma.
+
+Outros arquivos e pastas incluem:
+
+- **README.md** — documentação geral do projeto  
+- **.gitignore** — define arquivos ignorados pelo Git  
+- **package.json** — configurações e dependências do projeto
+
 
 ## 🚀 Tecnologias Utilizadas
 
