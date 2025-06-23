@@ -1,0 +1,175 @@
+import React, { useEffect, useState } from 'react';
+import {
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { Button, Card, Paragraph } from 'react-native-paper';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from '../components/BackButton';
+
+interface Court {
+  _id: string;
+  name: string;
+  location: string;
+}
+
+export default function BookCourtScreen() {
+  const [courts, setCourts] = useState<Court[]>([]);
+  const [selectedCourt, setSelectedCourt] = useState<string | null>(null);
+  const [date, setDate] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchCourts = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/courts');
+      setCourts(res.data);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível carregar as quadras.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBooking = async () => {
+    if (!selectedCourt) {
+      return Alert.alert('Atenção', 'Selecione uma quadra.');
+    }
+
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      await axios.post(
+        'http://localhost:5000/api/bookings',
+        {
+          courtId: selectedCourt,
+          date: date.toISOString(),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      Alert.alert('✅ Sucesso', 'Reserva efetuada com sucesso!');
+      setSelectedCourt(null);
+      setDate(new Date());
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Falha ao efetuar a reserva.');
+    }
+  };
+
+  useEffect(() => {
+    fetchCourts();
+  }, []);
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <BackButton />
+      <Text style={styles.title}>📅 Reservar uma Quadra</Text>
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#43a047" />
+      ) : (
+        <>
+          <Text style={styles.subtitle}>Selecione uma quadra:</Text>
+
+          {courts.map((court) => (
+            <Card
+              key={court._id}
+              style={[
+                styles.card,
+                selectedCourt === court._id && styles.selectedCard,
+              ]}
+              onPress={() => setSelectedCourt(court._id)}
+            >
+              <Card.Content>
+                <Paragraph style={styles.cardText}>{court.name}</Paragraph>
+                <Text style={styles.cardSubtext}>{court.location}</Text>
+              </Card.Content>
+            </Card>
+          ))}
+
+          <Text style={styles.subtitle}>Escolha a data e hora:</Text>
+          <Button
+            onPress={() => setShowDatePicker(true)}
+            mode="outlined"
+            style={styles.dateButton}
+          >
+            {date.toLocaleString()}
+          </Button>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="datetime"
+              display="default"
+              onChange={(_, selectedDate?: Date) => {
+                setShowDatePicker(false);
+                if (selectedDate) setDate(selectedDate);
+              }}
+            />
+          )}
+
+          <Button
+            mode="contained"
+            style={styles.bookButton}
+            onPress={handleBooking}
+          >
+            Confirmar Reserva
+          </Button>
+        </>
+      )}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: '#e8f5e9',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#388e3c',
+  },
+  card: {
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#c8e6c9',
+    borderRadius: 10,
+  },
+  selectedCard: {
+    borderColor: '#2e7d32',
+    backgroundColor: '#a5d6a7',
+  },
+  cardText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cardSubtext: {
+    fontSize: 12,
+    color: '#666',
+  },
+  dateButton: {
+    marginBottom: 20,
+    borderColor: '#2e7d32',
+  },
+  bookButton: {
+    backgroundColor: '#2e7d32',
+    paddingVertical: 8,
+  },
+});
