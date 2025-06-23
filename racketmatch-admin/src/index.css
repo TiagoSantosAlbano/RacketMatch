@@ -1,0 +1,19 @@
+/* Importa as diretivas básicas do Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* Customização padrão do body */
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+/* Outras classes customizadas podem ser adicionadas aqui */
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
