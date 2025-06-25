@@ -19,12 +19,14 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Ativa dark mode se já estiver guardado
   useEffect(() => {
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.classList.add('dark');
     }
   }, []);
 
+  // Verifica se já existe um admin no sistema
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
@@ -33,24 +35,22 @@ export default function Login() {
         if (!exists) navigate('/register');
       } catch (error) {
         console.error('Erro ao verificar admin:', error);
-        setAdminExists(true); // fallback: desbloqueia o login mesmo com erro
+        setAdminExists(true); // fallback: permite login
         setError('Erro ao verificar o sistema. Verifica o backend.');
       }
     };
     verifyAdmin();
   }, [navigate]);
 
+  // Alternar tema claro/escuro
   const toggleDarkMode = () => {
     const html = document.documentElement;
-    if (html.classList.contains('dark')) {
-      html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    } else {
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    }
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
   };
 
+  // Submissão do formulário de login
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     setLoading(true);

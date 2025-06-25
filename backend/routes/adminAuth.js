@@ -1,20 +1,26 @@
+// backend/controllers/adminAuth.js
+
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Admin = require('../models/Admin');
-const { verifyToken } = require('../middleware/authMiddleware'); // ⬅ usa o middleware JWT
+const authAdmin = require('../middleware/authAdmin'); // ✅ Usa o middleware simplificado
 
 // 🔑 LOGIN
-router.post('/auth/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const admin = await Admin.findOne({ email });
-    if (!admin) return res.status(401).json({ message: 'Admin não encontrado' });
+    if (!admin) {
+      return res.status(401).json({ message: 'Admin não encontrado' });
+    }
 
     const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) return res.status(401).json({ message: 'Palavra-passe incorreta' });
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Palavra-passe incorreta' });
+    }
 
     const token = jwt.sign(
       { id: admin._id, email: admin.email, role: 'admin' },
@@ -70,9 +76,9 @@ router.get('/exists', async (req, res) => {
   }
 });
 
-// ✅ Rota protegida (exemplo para testar token JWT)
-router.get('/protected', verifyToken, (req, res) => {
-  res.json({ message: 'Acesso autorizado', user: req.user });
+// ✅ Rota protegida de exemplo
+router.get('/protected', authAdmin, (req, res) => {
+  res.json({ message: 'Acesso autorizado', user: req.admin });
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { register } from '../../services/authService';
 import { Link } from 'react-router-dom';
+import { register } from '../../services/authService';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Aplica o tema escuro se estiver salvo no localStorage
   useEffect(() => {
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.classList.add('dark');
@@ -18,12 +19,12 @@ export default function RegisterPage() {
   const handleRegister = async () => {
     try {
       setLoading(true);
-      await register({ name, email, password, role: 'admin' });
-      alert('Conta admin criada com sucesso!');
+      await register({ name, email, password, role: 'admin' }); // ✅ Adiciona o role
+      alert('Conta de administrador criada com sucesso!');
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         console.error('Erro ao criar conta:', err.response?.data || err.message);
-        alert('Erro ao criar conta');
+        alert(err.response?.data?.message || 'Erro ao criar conta');
       } else {
         console.error('Erro inesperado:', err);
         alert('Erro desconhecido ao criar conta');
@@ -33,20 +34,17 @@ export default function RegisterPage() {
     }
   };
 
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  };
+
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-white dark:bg-gray-900 px-4">
-      {/* 🌙 Botão no canto superior esquerdo */}
       <button
-        onClick={() => {
-          const html = document.documentElement;
-          if (html.classList.contains('dark')) {
-            html.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-          } else {
-            html.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-          }
-        }}
+        onClick={toggleTheme}
         className="absolute top-6 left-6 z-20 text-2xl text-gray-700 dark:text-gray-200 hover:scale-110 transition"
       >
         🌙
@@ -76,6 +74,7 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               disabled={loading}
               autoComplete="name"
+              required
             />
           </div>
 
@@ -92,6 +91,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               autoComplete="email"
+              required
             />
           </div>
 
@@ -108,6 +108,7 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
               autoComplete="new-password"
+              required
             />
           </div>
         </div>

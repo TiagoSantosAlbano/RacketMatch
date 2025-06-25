@@ -21,11 +21,12 @@ export default function Sidebar() {
 
       <nav className="flex flex-col gap-3">
         {menu.map((item) => {
-          const isActive = location.pathname.endsWith(item.path);
+          const fullPath = `/dashboard/${item.path}`;
+          const isActive = location.pathname === fullPath;
           return (
             <Link
               key={item.path}
-              to={item.path}
+              to={fullPath}
               className={`flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-all duration-200 
                 ${isActive
                   ? 'bg-green-600 text-white'

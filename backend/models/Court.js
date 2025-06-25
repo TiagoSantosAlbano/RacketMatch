@@ -1,3 +1,5 @@
+// backend/models/Court.js
+
 const mongoose = require('mongoose');
 
 const courtSchema = new mongoose.Schema({
@@ -12,7 +14,7 @@ const courtSchema = new mongoose.Schema({
   tenantId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Tenant', 
-    required: true 
+    required: false // ← se não for multi-tenant obrigatório
   },
   createdAt: {
     type: Date,

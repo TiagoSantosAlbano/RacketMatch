@@ -1,5 +1,5 @@
-import { Router } from 'express';
-const router = Router();
+const express = require('express');
+const router = express.Router();
 
 router.post('/register', async (req, res) => {
   const { email, password } = req.body;
@@ -9,8 +9,6 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    // Aqui irias guardar na base de dados (MongoDB, etc)
-    // Simulação apenas:
     console.log('Novo registo:', email);
     res.status(201).json({ message: 'Conta criada com sucesso' });
   } catch (err) {
@@ -19,4 +17,4 @@ router.post('/register', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

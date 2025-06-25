@@ -6,7 +6,7 @@ import Matches from './Matches';
 import Users from './Users';
 import Payments from './Payments';
 import TenantsPage from './Tenants';
-import FinanceDashboard from './Report'; // Também podes renomear este ficheiro
+import FinanceDashboard from './Report';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Dashboard() {
@@ -14,12 +14,12 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-      {/* Sidebar fixa à esquerda */}
+      {/* Sidebar de navegação */}
       <Sidebar />
 
-      {/* Conteúdo principal */}
+      {/* Área principal */}
       <div className="flex-1 p-6 sm:p-8">
-        {/* Cabeçalho com título e logout */}
+        {/* Cabeçalho com título e botão de logout */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-extrabold text-green-600 dark:text-green-400">
             🎾 Painel de Administração
@@ -34,14 +34,17 @@ export default function Dashboard() {
 
         {/* Rotas internas do painel */}
         <Routes>
-          <Route path="/" element={<Navigate to="courts" />} />
+          {/* Redireciona para "courts" se estiver em /dashboard */}
+          <Route index element={<Navigate to="courts" replace />} />
           <Route path="courts" element={<Courts />} />
           <Route path="matches" element={<Matches />} />
           <Route path="users" element={<Users />} />
           <Route path="payments" element={<Payments />} />
           <Route path="finance" element={<FinanceDashboard />} />
           <Route path="tenants" element={<TenantsPage />} />
-          <Route path="*" element={<Navigate to="courts" />} />
+
+          {/* Fallback interno do painel */}
+          <Route path="*" element={<Navigate to="courts" replace />} />
         </Routes>
       </div>
     </div>

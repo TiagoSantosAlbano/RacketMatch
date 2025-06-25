@@ -21,12 +21,16 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Proxy para redirecionar chamadas de API para o backend
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
       },
+    },
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
     },
   },
 });

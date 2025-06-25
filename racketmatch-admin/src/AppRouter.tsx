@@ -21,7 +21,7 @@ export default function AppRouter() {
 
       {/* Rotas protegidas */}
       <Route
-        path="/dashboard"
+        path="/dashboard/*"
         element={
           <PrivateRoute>
             <Dashboard />

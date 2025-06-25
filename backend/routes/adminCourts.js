@@ -1,19 +1,22 @@
+// backend/routes/adminCourts.js
+
 const express = require('express');
 const router = express.Router();
 const Court = require('../models/Court');
-const authAdmin = require('../middleware/authAdmin');
+const authAdmin = require('../middleware/authAdmin'); // Middleware de autenticação admin
 
-// 🔍 Listar todas as quadras
+// ✅ GET /api/admin/courts → Listar todas as quadras
 router.get('/', authAdmin, async (req, res) => {
   try {
     const courts = await Court.find();
     res.json(courts);
   } catch (err) {
+    console.error('Erro ao buscar quadras:', err);
     res.status(500).json({ error: 'Erro ao buscar quadras' });
   }
 });
 
-// ➕ Criar uma nova quadra
+// ✅ POST /api/admin/courts → Criar uma nova quadra
 router.post('/', authAdmin, async (req, res) => {
   try {
     const { name, location, club } = req.body;
@@ -21,32 +24,29 @@ router.post('/', authAdmin, async (req, res) => {
     await court.save();
     res.status(201).json({ message: 'Quadra criada com sucesso', court });
   } catch (err) {
+    console.error('Erro ao criar quadra:', err);
     res.status(500).json({ error: 'Erro ao criar quadra' });
   }
 });
 
-// ✏️ Atualizar uma quadra
+// ✅ PUT /api/admin/courts/:id → Atualizar quadra
 router.put('/:id', authAdmin, async (req, res) => {
   try {
-    const court = await Court.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const court = await Court.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!court) return res.status(404).json({ error: 'Quadra não encontrada' });
+
     res.json({ message: 'Quadra atualizada com sucesso', court });
   } catch (err) {
+    console.error('Erro ao atualizar quadra:', err);
     res.status(500).json({ error: 'Erro ao atualizar quadra' });
   }
 });
 
-// ❌ Remover quadra
+// ✅ DELETE /api/admin/courts/:id → Remover quadra
 router.delete('/:id', authAdmin, async (req, res) => {
   try {
     const court = await Court.findByIdAndDelete(req.params.id);
-    if (!court) {
-      return res.status(404).json({ message: 'Quadra não encontrada.' });
-    }
+    if (!court) return res.status(404).json({ message: 'Quadra não encontrada.' });
 
     res.json({ message: 'Quadra removida com sucesso.' });
   } catch (error) {
