@@ -1,4 +1,4 @@
-  import api from '../services/api';
+  import api from './api';
   import { Payment, PaymentCreateDTO } from '../models/payment';
 
   export const getPayments = async (): Promise<Payment[]> => {

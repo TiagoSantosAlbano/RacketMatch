@@ -1,7 +1,7 @@
 // src/pages/admin/CourtsDashboard.tsx
 import React, { useEffect, useState } from "react";
 import CourtCard from "../courts/CourtCard";
-import CourtModal from "../../components/admin/CourtModal";
+import CourtModal from "./CourtModal";
 import { Court } from "../../models/court";
 
 const CourtsDashboard = () => {
