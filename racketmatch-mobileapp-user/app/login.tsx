@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native'; // Alert removido
-import { useRouter } from 'expo-router';
+import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router'; // ✅ Certifica-te que estás dentro da pasta /app
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -10,13 +10,12 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Verificar se o usuário já está logado ao carregar a página
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         const token = await AsyncStorage.getItem('authToken');
         if (token) {
-          router.replace('/');
+          router.replace('/'); // ✅ Altera aqui se tiveres outra rota inicial
         }
       } catch (err) {
         console.error('Erro ao verificar o token:', err);
@@ -24,7 +23,7 @@ const LoginScreen = () => {
     };
 
     checkLoginStatus();
-  }, [router]);
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -47,9 +46,9 @@ const LoginScreen = () => {
       setPassword('');
       setError('');
 
-      router.replace('/');
-    } catch (err) {
-      console.error('Erro ao fazer login:', err);
+      router.replace('/'); // ✅ Redireciona após login com sucesso
+    } catch (err: any) {
+      console.error('Erro ao fazer login:', err?.response?.data || err.message);
       setError('Credenciais inválidas. Tente novamente.');
     }
   };

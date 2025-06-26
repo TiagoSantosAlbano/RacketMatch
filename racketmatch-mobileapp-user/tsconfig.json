@@ -17,8 +17,9 @@
         "constants/*"
       ],
       "@assets/*": [
-        "assets/*"
-      ]
+        "assets/*,"
+      ],
+      
     },
     "jsx": "react-native",
     "moduleResolution": "node",

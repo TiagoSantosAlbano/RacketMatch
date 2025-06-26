@@ -27,6 +27,7 @@ export default function CourtCard({
           className="w-full h-40 object-cover"
         />
       )}
+
       <div className="p-4 space-y-1">
         <h3 className="text-lg font-bold text-green-700 dark:text-green-400">
           {court.name}
@@ -34,7 +35,7 @@ export default function CourtCard({
 
         {court.type && (
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            🏷️ Piso: {court.type}
+            🏷️ Tipo: {Array.isArray(court.type) ? court.type.join(', ') : court.type}
           </p>
         )}
 
