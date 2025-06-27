@@ -1,31 +1,47 @@
-import api from './api'; // certifique-se de que esse caminho está correto
-
-import {
-  loginAdmin,
-  registerAdmin,
-  logoutAdmin,
-  getAdminToken,
-  checkIfAdminExists
-} from './adminService';
+import api from './api'; // axios customizado com interceptor de token
 
 // Interface para payload de registro genérico
 interface RegisterPayload {
   email: string;
   password: string;
   name: string;
-    role: string; 
+  role: string;
 }
 
-// Função genérica de registro para usuários
+interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+// ======= REGISTRO =======
 export function register(data: RegisterPayload) {
   return api.post('/register', data);
 }
 
-// Reexportar funções de admin para manter uma API de autenticação coesa
-export {
-  loginAdmin,
-  registerAdmin,
-  logoutAdmin,
-  getAdminToken,
-  checkIfAdminExists
-};
+// ======= LOGIN (Admin ou geral) =======
+export async function loginAdmin(data: LoginPayload): Promise<void> {
+  const response = await api.post('/admin/login', data);
+  const token = response.data.token;
+
+  if (token) {
+    localStorage.setItem('token', token);
+  } else {
+    throw new Error('Token não recebido do servidor');
+  }
+}
+
+// ======= LOGOUT =======
+export function logoutAdmin() {
+  localStorage.removeItem('token');
+}
+
+// ======= GET TOKEN =======
+export function getAdminToken(): string | null {
+  return localStorage.getItem('token');
+}
+
+// ======= CHECK EXISTÊNCIA (exemplo adicional) =======
+export async function checkIfAdminExists(email: string): Promise<boolean> {
+  const response = await api.get(`/admin/check-email?email=${email}`);
+  return response.data.exists;
+}

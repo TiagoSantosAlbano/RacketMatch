@@ -1,11 +1,9 @@
-// backend/controllers/adminAuth.js
-
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Admin = require('../models/Admin');
-const authAdmin = require('../middleware/authAdmin'); // ✅ Usa o middleware simplificado
+const authAdmin = require('../middleware/authAdmin');
 
 // 🔑 LOGIN
 router.post('/login', async (req, res) => {
@@ -47,7 +45,6 @@ router.post('/login', async (req, res) => {
 router.post('/auth/register', async (req, res) => {
   try {
     const existingAdmins = await Admin.countDocuments();
-
     if (existingAdmins >= 1) {
       return res.status(403).json({ message: 'Já existe um admin registado' });
     }
@@ -65,7 +62,7 @@ router.post('/auth/register', async (req, res) => {
   }
 });
 
-// ✅ Verificação se já existe um admin (usado no login)
+// ✅ Verificação se já existe um admin
 router.get('/exists', async (req, res) => {
   try {
     const count = await Admin.countDocuments();

@@ -1,31 +1,27 @@
-// src/services/courtService.ts
-
 import api from './api';
 import { Court } from '../models/court';
 
-// GET – Buscar todos os courts
-export const getCourts = async (): Promise<Court[]> => {
-  const response = await api.get('/admin/courts');
-  return response.data;
-};
+const COURTS_ENDPOINT = '/admin/courts';
 
-// POST – Criar novo court com FormData
-export const createCourt = async (courtData: FormData): Promise<Court> => {
-  const response = await api.post('/admin/courts', courtData, {
-    // headers: { 'Content-Type': 'multipart/form-data' },
-  });
+export async function getCourts(): Promise<Court[]> {
+  const response = await api.get(COURTS_ENDPOINT);
   return response.data;
-};
+}
 
-// PUT – Atualizar court com FormData
-export const updateCourt = async (id: string, courtData: FormData): Promise<Court> => {
-  const response = await api.put(`/admin/courts/${id}`, courtData, {
+export async function createCourt(data: FormData): Promise<Court> {
+  const response = await api.post(COURTS_ENDPOINT, data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   return response.data;
-};
+}
 
-// DELETE – Remover court
-export const deleteCourt = async (id: string): Promise<void> => {
-  await api.delete(`/admin/courts/${id}`);
-};
+export async function updateCourt(id: string, data: FormData): Promise<Court> {
+  const response = await api.put(`${COURTS_ENDPOINT}/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+}
+
+export async function deleteCourt(id: string): Promise<void> {
+  await api.delete(`${COURTS_ENDPOINT}/${id}`);
+}

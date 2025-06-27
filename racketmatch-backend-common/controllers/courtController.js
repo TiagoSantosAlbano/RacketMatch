@@ -16,8 +16,18 @@ const getAllCourts = async (req, res) => {
 const createCourt = async (req, res) => {
   try {
     const { name, location, type, price } = req.body;
-    // const image = req.file ? `/uploads/${req.file.filename}` : null;
-    const court = new Court({ name, location, type, price });
+    const parsedType = Array.isArray(type) ? type : [type];
+    const parsedPrice = price ? parseFloat(price) : 0;
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const court = new Court({
+      name,
+      location,
+      type: parsedType,
+      price: parsedPrice,
+      image,
+    });
+
     const savedCourt = await court.save();
     res.status(201).json({ court: savedCourt });
   } catch (error) {
@@ -30,7 +40,12 @@ const createCourt = async (req, res) => {
 const updateCourt = async (req, res) => {
   try {
     const { name, location, type, price } = req.body;
-    const updateData = { name, location, type, price };
+    const updateData = {
+      name,
+      location,
+      type: Array.isArray(type) ? type : [type],
+      price: price ? parseFloat(price) : 0,
+    };
 
     if (req.file) {
       updateData.image = `/uploads/${req.file.filename}`;

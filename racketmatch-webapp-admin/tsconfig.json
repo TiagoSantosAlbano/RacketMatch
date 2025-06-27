@@ -6,17 +6,19 @@
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
     "baseUrl": "./src",
-    "paths": {
-      "@pages/*": ["pages/*"],
-      "@components/*": ["components/*"],
-      "@services/*": ["services/*"],
-      "@models/*": ["models/*"],
-      "@routes/*": ["routes/*"],
-      "@context/*": ["context/*"]
-    },
+"paths": {
+  "@pages/*": ["pages/*"],
+  "@components/*": ["components/*"],
+  "@services/*": ["services/*"],
+  "@models/*": ["models/*"],
+  "@routes/*": ["routes/*"],
+  "@context/*": ["context/*"]
+},
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "strict": true,
     "noImplicitAny": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
