@@ -16,8 +16,7 @@ const HomeScreen = () => {
     preferences: '/preferences' as const,
     bookCourt: '/book-court' as const,
     openMatch: '/open-match' as const,
-    equipmentRental: '/equipment-rental' as const,
-    bookings: '/bookings' as const, // ✅ Corrigido aqui
+    bookings: '/bookings' as const,
     community: '/community' as const,
     profile: '/profile' as const,
     chat: '/chat' as const,
@@ -116,28 +115,6 @@ const HomeScreen = () => {
             <Text style={styles.matchDescription}>Se você está procurando jogadores do seu nível</Text>
             <Button mode="contained" style={styles.matchButton} onPress={() => router.push(routes.openMatch)}>
               Encontrar Jogo
-            </Button>
-          </Card.Content>
-        </Card>
-      </View>
-
-      <View style={styles.matchGrid}>
-        <Card style={styles.matchCard}>
-          <Card.Content style={styles.matchContent}>
-            <Icon name="tennis" size={30} color="#000" />
-            <Text style={styles.matchTitle}>Aluguer de Material</Text>
-            <Button mode="contained" style={styles.matchButton} onPress={() => router.push(routes.equipmentRental)}>
-              Alugar Agora
-            </Button>
-          </Card.Content>
-        </Card>
-
-        <Card style={styles.matchCard}>
-          <Card.Content style={styles.matchContent}>
-            <Icon name="calendar-check" size={30} color="#000" />
-            <Text style={styles.matchTitle}>Minhas Marcações</Text>
-            <Button mode="contained" style={styles.matchButton} onPress={() => router.push(routes.bookings)}>
-              Ver Marcações
             </Button>
           </Card.Content>
         </Card>

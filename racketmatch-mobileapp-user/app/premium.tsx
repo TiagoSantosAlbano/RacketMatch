@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Button, Card, Paragraph } from 'react-native-paper';
@@ -9,21 +9,20 @@ export default function PremiumScreen() {
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const checkStatus = async () => {
-    try {
-      const token = await AsyncStorage.getItem('authToken');
-      const res = await axios.get('http://localhost:5000/api/user', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setIsPremium(res.data.isPremium);
-    } catch (error) {
-      console.error('Erro ao buscar dados do usuário:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('authToken');
+        const res = await axios.get('http://localhost:5000/api/user', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsPremium(res.data.isPremium);
+      } catch (error) {
+        console.error('Erro ao buscar dados do usuário:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     checkStatus();
   }, []);
 
@@ -56,18 +55,12 @@ export default function PremiumScreen() {
         <Card.Content>
           <Text style={styles.title}>RacketMatch Premium 🎾</Text>
           <Paragraph style={styles.paragraph}>💰 3,99€/mês</Paragraph>
-          <Paragraph style={styles.paragraph}>✅ 10% de desconto no aluguer de material</Paragraph>
-          <Paragraph style={styles.paragraph}>🔥 Prioridade no matching com outros jogadores</Paragraph>
-          <Paragraph style={styles.paragraph}>🎯 Prioridade na reserva de campos</Paragraph>
-
+          <Paragraph style={styles.paragraph}>✅ Prioridade no matching</Paragraph>
+          <Paragraph style={styles.paragraph}>🎯 Prioridade nas reservas</Paragraph>
           {isPremium ? (
             <Text style={styles.success}>Já és membro Premium! 🏆</Text>
           ) : (
-            <Button
-              mode="contained"
-              onPress={activatePremium}
-              style={styles.button}
-            >
+            <Button mode="contained" onPress={activatePremium} style={styles.button}>
               Ativar Premium
             </Button>
           )}
@@ -78,46 +71,12 @@ export default function PremiumScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#e8f5e9',
-    padding: 20,
-  },
-  center: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#555',
-  },
-  card: {
-    borderRadius: 12,
-    elevation: 5,
-    backgroundColor: '#fff',
-    padding: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2e7d32',
-    textAlign: 'center',
-    marginBottom: 15,
-  },
-  paragraph: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 8,
-  },
-  button: {
-    marginTop: 20,
-    backgroundColor: '#2e7d32',
-  },
-  success: {
-    marginTop: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    color: '#2e7d32',
-  },
+  container: { flex: 1, backgroundColor: '#e8f5e9', padding: 20 },
+  center: { justifyContent: 'center', alignItems: 'center' },
+  loadingText: { marginTop: 12, fontSize: 16, color: '#555' },
+  card: { borderRadius: 12, elevation: 5, backgroundColor: '#fff', padding: 10 },
+  title: { fontSize: 24, fontWeight: 'bold', color: '#2e7d32', textAlign: 'center', marginBottom: 15 },
+  paragraph: { fontSize: 14, color: '#444', marginBottom: 8 },
+  button: { marginTop: 20, backgroundColor: '#2e7d32' },
+  success: { marginTop: 20, textAlign: 'center', fontWeight: 'bold', color: '#2e7d32' },
 });

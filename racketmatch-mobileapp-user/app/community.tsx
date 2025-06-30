@@ -29,6 +29,7 @@ export default function CommunityScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
   const [loading, setLoading] = useState(true);
+  const [posting, setPosting] = useState(false);
 
   const fetchPosts = async () => {
     try {
@@ -46,6 +47,7 @@ export default function CommunityScreen() {
     if (!newPost.trim()) return;
 
     try {
+      setPosting(true);
       const token = await AsyncStorage.getItem('authToken');
       const res = await axios.post(
         'http://localhost:5000/api/posts',
@@ -58,6 +60,8 @@ export default function CommunityScreen() {
     } catch (err) {
       console.error('Erro ao postar:', err);
       Alert.alert('Erro', 'Não foi possível publicar seu post.');
+    } finally {
+      setPosting(false);
     }
   };
 
@@ -75,7 +79,7 @@ export default function CommunityScreen() {
         Comunidade 🗣️🎾
       </Animatable.Text>
 
-      <Animatable.View animation="fadeInUp" delay={300} style={styles.postInputContainer}>
+      <Animatable.View animation="fadeInUp" delay={200} style={styles.postInputContainer}>
         <TextInput
           placeholder="Partilha a tua paixão pelo desporto... 🏅"
           value={newPost}
@@ -83,11 +87,16 @@ export default function CommunityScreen() {
           multiline
           style={styles.textInput}
         />
-        <Button title="📢 Publicar" onPress={handlePost} color="#43a047" />
+        <Button title={posting ? 'A publicar...' : '📢 Publicar'} onPress={handlePost} color="#2e7d32" disabled={posting} />
       </Animatable.View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#43a047" style={{ marginTop: 20 }} />
+        <ActivityIndicator size="large" color="#2e7d32" style={{ marginTop: 20 }} />
+      ) : posts.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Ainda não há posts na comunidade.</Text>
+          <Text style={styles.emptySubtext}>Seja o primeiro a partilhar algo! 🎉</Text>
+        </View>
       ) : (
         <FlatList
           data={posts}
@@ -164,5 +173,19 @@ const styles = StyleSheet.create({
   postContent: {
     fontSize: 16,
     color: '#424242',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2e7d32',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#666',
   },
 });

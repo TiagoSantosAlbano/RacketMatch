@@ -5,14 +5,12 @@ import { useRouter } from 'expo-router';
 const NotificationsScreen = () => {
   const router = useRouter();
 
-  // Dados fictícios para notificações (pode ser substituído por dados do backend)
   const notifications = [
-    { id: '1', message: 'New match scheduled!', time: '10:30 AM' },
-    { id: '2', message: 'Court booking confirmed', time: 'Yesterday' },
-    { id: '3', message: 'John Doe sent you a message', time: '2 days ago' },
+    { id: '1', message: 'Novo jogo marcado!', time: 'Hoje às 10:30' },
+    { id: '2', message: 'Reserva de campo confirmada', time: 'Ontem' },
+    { id: '3', message: 'João Silva enviou uma mensagem', time: '2 dias atrás' },
   ];
 
-  // Componente para renderizar cada notificação
   const renderNotification = ({ item }: { item: { id: string; message: string; time: string } }) => (
     <View style={styles.notificationItem}>
       <Text style={styles.notificationMessage}>{item.message}</Text>
@@ -22,20 +20,18 @@ const NotificationsScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Abas de Navegação */}
       <View style={styles.tabBar}>
         <TouchableOpacity style={styles.tabActive}>
-          <Text style={styles.tabTextActive}>Notifications</Text>
+          <Text style={styles.tabTextActive}>Notificações</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.tab}
           onPress={() => router.push('/chat')}
         >
-          <Text style={styles.tabText}>Chats</Text>
+          <Text style={styles.tabText}>Conversas</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Conteúdo */}
       <View style={styles.content}>
         {notifications.length > 0 ? (
           <FlatList
@@ -46,8 +42,8 @@ const NotificationsScreen = () => {
           />
         ) : (
           <View style={styles.emptyContainer}>
-            <Text style={styles.noNotificationsText}>No Notifications</Text>
-            <Text style={styles.subText}>Notifications will appear here</Text>
+            <Text style={styles.noNotificationsText}>Sem Notificações</Text>
+            <Text style={styles.subText}>As notificações aparecerão aqui</Text>
           </View>
         )}
       </View>
@@ -58,13 +54,13 @@ const NotificationsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA', // Fundo cinza claro
+    backgroundColor: '#F5F7FA',
   },
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 10,
-    backgroundColor: '#2E4A3D', // Verde escuro suave para o fundo das abas
+    backgroundColor: '#2E4A3D',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -74,14 +70,14 @@ const styles = StyleSheet.create({
   tabActive: {
     padding: 10,
     borderBottomWidth: 2,
-    borderBottomColor: '#A8D5BA', // Verde claro para a borda da aba ativa
+    borderBottomColor: '#A8D5BA',
   },
   tabText: {
-    color: '#fff', // Texto branco
+    color: '#fff',
     fontSize: 16,
   },
   tabTextActive: {
-    color: '#A8D5BA', // Verde claro para o texto da aba ativa
+    color: '#A8D5BA',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -95,25 +91,20 @@ const styles = StyleSheet.create({
   notificationItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     backgroundColor: '#fff',
     padding: 15,
     marginBottom: 10,
     borderRadius: 10,
-    elevation: 2, // Sombra para Android
-    shadowColor: '#000', // Sombra para iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    elevation: 2,
   },
   notificationMessage: {
     fontSize: 16,
-    color: '#2E4A3D', // Verde escuro suave para o texto da notificação
+    color: '#2E4A3D',
     flex: 1,
   },
   notificationTime: {
     fontSize: 14,
-    color: '#666', // Cinza para o texto de horário
+    color: '#666',
   },
   emptyContainer: {
     flex: 1,
@@ -123,12 +114,12 @@ const styles = StyleSheet.create({
   noNotificationsText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2E4A3D', // Verde escuro suave para o texto "No Notifications"
+    color: '#2E4A3D',
     marginBottom: 10,
   },
   subText: {
     fontSize: 16,
-    color: '#666', // Texto cinza
+    color: '#666',
   },
 });
 

@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Image,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 
 const ChatScreen = () => {
@@ -11,7 +17,7 @@ const ChatScreen = () => {
       <View style={styles.tabBar}>
         <TouchableOpacity
           style={styles.tab}
-          onPress={() => router.push({pathname: '/notifications'})}
+          onPress={() => router.push('/notifications')}
         >
           <Text style={styles.tabText}>Notifications</Text>
         </TouchableOpacity>
@@ -20,19 +26,19 @@ const ChatScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Conteúdo */}
+      {/* Estado Vazio */}
       <View style={styles.content}>
         <Image
-          source={{ uri: 'https://via.placeholder.com/200' }} // Placeholder para a ilustração
+          source={require('../assets/images/empty-chat.png')} // Substitui placeholder externo
           style={styles.illustration}
         />
-        <Text style={styles.noChatsText}>No Chats</Text>
-        <Text style={styles.subText}>Chat list will appear here</Text>
+        <Text style={styles.noChatsText}>Sem conversas ainda</Text>
+        <Text style={styles.subText}>As tuas conversas aparecerão aqui</Text>
         <TouchableOpacity
           style={styles.startButton}
-          onPress={() => router.push({pathname: '/start-conversation'})}
+          onPress={() => router.push('/start-conversation')}
         >
-          <Text style={styles.startButtonText}>Start a conversation</Text>
+          <Text style={styles.startButtonText}>Iniciar conversa</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -42,13 +48,13 @@ const ChatScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA', // Fundo cinza claro (mantido)
+    backgroundColor: '#F5F7FA',
   },
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 10,
-    backgroundColor: '#2E4A3D', // Verde escuro suave para o fundo das abas
+    backgroundColor: '#2E4A3D',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -58,14 +64,14 @@ const styles = StyleSheet.create({
   tabActive: {
     padding: 10,
     borderBottomWidth: 2,
-    borderBottomColor: '#A8D5BA', // Verde claro para a borda da aba ativa
+    borderBottomColor: '#A8D5BA',
   },
   tabText: {
-    color: '#fff', // Texto branco
+    color: '#fff',
     fontSize: 16,
   },
   tabTextActive: {
-    color: '#A8D5BA', // Verde claro para o texto da aba ativa
+    color: '#A8D5BA',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -78,28 +84,29 @@ const styles = StyleSheet.create({
   illustration: {
     width: 200,
     height: 200,
+    resizeMode: 'contain',
     marginBottom: 20,
   },
   noChatsText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2E4A3D', // Verde escuro suave para o texto "No Chats"
+    color: '#2E4A3D',
     marginBottom: 10,
   },
   subText: {
     fontSize: 16,
-    color: '#666', // Texto cinza (mantido)
+    color: '#666',
     marginBottom: 20,
   },
   startButton: {
     borderWidth: 2,
-    borderColor: '#4CAF50', // Verde claro vibrante para a borda do botão
+    borderColor: '#4CAF50',
     borderRadius: 25,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
   },
   startButtonText: {
-    color: '#4CAF50', // Verde claro vibrante para o texto do botão
+    color: '#4CAF50',
     fontSize: 16,
     fontWeight: 'bold',
   },

@@ -5,6 +5,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  View,
 } from 'react-native';
 import { Button, Card, Paragraph } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -30,7 +31,7 @@ export default function BookCourtScreen() {
       const res = await axios.get('http://localhost:5000/api/courts');
       setCourts(res.data);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível carregar as quadras.');
+      Alert.alert('Erro', 'Não foi possível carregar as quadras. Verifique sua conexão.');
     } finally {
       setLoading(false);
     }
@@ -38,7 +39,7 @@ export default function BookCourtScreen() {
 
   const handleBooking = async () => {
     if (!selectedCourt) {
-      return Alert.alert('Atenção', 'Selecione uma quadra.');
+      return Alert.alert('⚠️ Atenção', 'Por favor, selecione uma quadra.');
     }
 
     try {
@@ -58,8 +59,8 @@ export default function BookCourtScreen() {
       setSelectedCourt(null);
       setDate(new Date());
     } catch (error) {
-      console.error(error);
-      Alert.alert('Erro', 'Falha ao efetuar a reserva.');
+      console.error('Erro na reserva:', error);
+      Alert.alert('Erro', 'Falha ao efetuar a reserva. Tente novamente.');
     }
   };
 
@@ -73,26 +74,32 @@ export default function BookCourtScreen() {
       <Text style={styles.title}>📅 Reservar uma Quadra</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#43a047" />
+        <ActivityIndicator size="large" color="#43a047" style={{ marginTop: 20 }} />
       ) : (
         <>
           <Text style={styles.subtitle}>Selecione uma quadra:</Text>
 
-          {courts.map((court) => (
-            <Card
-              key={court._id}
-              style={[
-                styles.card,
-                selectedCourt === court._id && styles.selectedCard,
-              ]}
-              onPress={() => setSelectedCourt(court._id)}
-            >
-              <Card.Content>
-                <Paragraph style={styles.cardText}>{court.name}</Paragraph>
-                <Text style={styles.cardSubtext}>{court.location}</Text>
-              </Card.Content>
-            </Card>
-          ))}
+          {courts.length === 0 ? (
+            <Text style={styles.noCourtsText}>Nenhuma quadra disponível no momento.</Text>
+          ) : (
+            courts.map((court) => (
+              <Card
+                key={court._id}
+                style={[
+                  styles.card,
+                  selectedCourt === court._id && styles.selectedCard,
+                ]}
+                onPress={() => setSelectedCourt(court._id)}
+              >
+                <Card.Content>
+                  <Paragraph style={styles.cardText}>{court.name}</Paragraph>
+                  <Text style={styles.cardSubtext}>{court.location}</Text>
+                </Card.Content>
+              </Card>
+            ))
+          )}
+
+          <View style={styles.separator} />
 
           <Text style={styles.subtitle}>Escolha a data e hora:</Text>
           <Button
@@ -108,6 +115,7 @@ export default function BookCourtScreen() {
               value={date}
               mode="datetime"
               display="default"
+              minimumDate={new Date()}
               onChange={(_, selectedDate?: Date) => {
                 setShowDatePicker(false);
                 if (selectedDate) setDate(selectedDate);
@@ -119,6 +127,7 @@ export default function BookCourtScreen() {
             mode="contained"
             style={styles.bookButton}
             onPress={handleBooking}
+            disabled={!selectedCourt}
           >
             Confirmar Reserva
           </Button>
@@ -132,6 +141,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: '#e8f5e9',
+    flexGrow: 1,
   },
   title: {
     fontSize: 26,
@@ -146,11 +156,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#388e3c',
   },
+  noCourtsText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#888',
+    marginBottom: 20,
+  },
+  separator: {
+    marginVertical: 20,
+    height: 1,
+    backgroundColor: '#ccc',
+  },
   card: {
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#c8e6c9',
     borderRadius: 10,
+    backgroundColor: '#fff',
   },
   selectedCard: {
     borderColor: '#2e7d32',
@@ -159,6 +181,7 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#2e7d32',
   },
   cardSubtext: {
     fontSize: 12,
@@ -170,6 +193,7 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     backgroundColor: '#2e7d32',
-    paddingVertical: 8,
+    paddingVertical: 10,
+    borderRadius: 8,
   },
 });

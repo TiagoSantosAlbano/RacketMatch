@@ -75,7 +75,7 @@ export default function OpenMatchScreen() {
         mode="contained"
         icon="plus"
         style={styles.createButton}
-        onPress={() => router.push('/create-open-match')}
+        onPress={() => router.push('./create-open-match')}
       >
         Criar Novo Jogo
       </Button>
