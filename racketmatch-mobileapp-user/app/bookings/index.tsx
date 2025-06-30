@@ -12,7 +12,7 @@ interface Booking {
   date: string;
   location: string;
   status: string;
-  basePrice?: number; // campo opcional para mostrar desconto
+  basePrice?: number;
 }
 
 const BookingsScreen = () => {
@@ -55,8 +55,6 @@ const BookingsScreen = () => {
       } catch (error) {
         console.error('Erro ao buscar marcações:', error);
         setError('Falha ao carregar as marcações. Tente novamente mais tarde.');
-
-        // Mock de fallback para testes
         setBookings([
           {
             id: '1',
@@ -84,11 +82,11 @@ const BookingsScreen = () => {
 
   const handleViewBooking = (bookingId: string) => {
     router.push({
-      pathname: '/bookings/confirmations/[id]',
+      pathname: '/bookings/confirmation/[id]', // ✅ Corrigido aqui (sem "s")
       params: { id: bookingId },
     });
-  };  
-  
+  };
+
   const getFinalPrice = (basePrice: number | undefined) => {
     if (!basePrice) return null;
     return user?.isPremium ? (basePrice * 0.9).toFixed(2) : basePrice.toFixed(2);
@@ -125,9 +123,7 @@ const BookingsScreen = () => {
                         {booking.basePrice && (
                           <Text style={styles.bookingInfo}>
                             Preço: {getFinalPrice(booking.basePrice)}€{' '}
-                            {user?.isPremium && (
-                              <Text style={{ color: 'green' }}>(-10% Premium)</Text>
-                            )}
+                            {user?.isPremium && <Text style={{ color: 'green' }}>(-10% Premium)</Text>}
                           </Text>
                         )}
 
@@ -151,7 +147,7 @@ const BookingsScreen = () => {
         )}
 
         <View style={styles.bottomNav}>
-          <Icon name="home" size={25} color="#888" onPress={() => router.push('/')} />
+          <Icon name="home" size={25} color="#888" onPress={() => router.push('/home')} />
           <Icon name="account-group" size={25} color="#888" onPress={() => router.push('/community')} />
           <Icon name="account" size={25} color="#888" onPress={() => router.push('/profile')} />
         </View>

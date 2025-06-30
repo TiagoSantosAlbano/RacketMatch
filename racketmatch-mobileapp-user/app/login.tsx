@@ -1,137 +1,178 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router'; // ✅ Certifica-te que estás dentro da pasta /app
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
-const LoginScreen = () => {
+export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth(); // ✅ usa o contexto global de auth
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('authToken');
-        if (token) {
-          router.replace('/'); // ✅ Altera aqui se tiveres outra rota inicial
-        }
-      } catch (err) {
-        console.error('Erro ao verificar o token:', err);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError('Por favor, preencha todos os campos.');
+      Alert.alert('Erro', 'Preenche todos os campos.');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/login', {
+      setLoading(true);
+
+      const response = await axios.post('http://192.168.1.84:5000/api/users/login', {
         email,
         password,
       });
 
       const { token, user } = response.data;
 
-      await AsyncStorage.setItem('authToken', token);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await login(token, user); // ✅ guarda nos estados globais + AsyncStorage
 
-      setEmail('');
-      setPassword('');
-      setError('');
-
-      router.replace('/'); // ✅ Redireciona após login com sucesso
-    } catch (err: any) {
-      console.error('Erro ao fazer login:', err?.response?.data || err.message);
-      setError('Credenciais inválidas. Tente novamente.');
+      Alert.alert('Bem-vindo!', `Olá, ${user.name}!`);
+      router.replace('/'); // ou /home ou outra página protegida
+    } catch (error: any) {
+      console.error('Erro no login:', error?.response?.data || error);
+      Alert.alert('Erro', error?.response?.data?.message || 'Falha no login.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Racket Match</Text>
-      <Text style={styles.subtitle}>Faça login para continuar</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <View style={styles.card}>
+        <Text style={styles.logo}>🎾 RacketMatch</Text>
+        <Text style={styles.title}>Iniciar Sessão</Text>
 
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        <TextInput
+          style={styles.input}
+          placeholder="📧 Email"
+          placeholderTextColor="#888"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoCapitalize="none"
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="🔒 Password"
+          placeholderTextColor="#888"
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={setPassword}
+          autoCapitalize="none"
+        />
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>Login</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          style={styles.togglePassword}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Text style={styles.togglePasswordText}>
+            {showPassword ? '🙈 Esconder' : '👁️ Mostrar'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>🔓 Entrar</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push('/register')}>
+          <Text style={styles.registerText}>
+            Não tens conta? <Text style={styles.registerLink}>Regista-te</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#f6fafe',
     alignItems: 'center',
-    backgroundColor: '#F5F7FA',
+    justifyContent: 'center',
     padding: 20,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#1A2B3C',
-    marginBottom: 10,
+  card: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 24,
+    borderRadius: 20,
+    elevation: 8,
   },
-  subtitle: {
-    fontSize: 18,
-    color: '#666',
+  logo: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#f97316',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 12,
   },
-  loginButton: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#00C4CC',
-    borderRadius: 10,
-    justifyContent: 'center',
+  togglePassword: {
+    alignSelf: 'flex-end',
+    marginBottom: 12,
+  },
+  togglePasswordText: {
+    fontSize: 14,
+    color: '#00c4b4',
+  },
+  button: {
+    backgroundColor: '#00c4b4',
+    borderRadius: 50,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginTop: 10,
+    marginBottom: 10,
   },
-  loginButtonText: {
+  buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  registerText: {
+    marginTop: 16,
+    color: '#333',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  registerLink: {
+    color: '#00a600',
     fontWeight: 'bold',
   },
-  errorText: {
-    color: 'red',
-    fontSize: 16,
-    marginBottom: 15,
-  },
 });
-
-export default LoginScreen;

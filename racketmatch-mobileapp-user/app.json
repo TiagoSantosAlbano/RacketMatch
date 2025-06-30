@@ -4,32 +4,31 @@
     "slug": "racket-match",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logoracketmatch.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
+    "icon": "./assets/images/racketmatchlogo.jpg",
+    "scheme": "racketmatch",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.james282.racketmatch",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logoracketmatch.png",
+        "foregroundImage": "./assets/images/racketmatchfavicon.jpg",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.james282.racketmatch"
+      }
     },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/faviconracketmatch.png"
+      "favicon": "./assets/images/racketmatchfavicon.jpg",
+      "output": "static"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logoracketmatch.png",
-          "imageWidth": 200,
+          "image": "./assets/images/racketmatchlogo.jpg",
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }

@@ -19,20 +19,28 @@ interface Match {
 export default function OpenMatchScreen() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
         const token = await AsyncStorage.getItem('authToken');
-        const res = await axios.get('http://localhost:5000/api/matches', {
+        const user = await AsyncStorage.getItem('user');
+        if (user) {
+          const parsed = JSON.parse(user);
+          setUserId(parsed.id || parsed._id);
+        }
+
+        const response = await axios.get('http://localhost:5000/api/matches', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const filtered = res.data.filter((m: Match) => m.players.length < 4);
-        setMatches(filtered);
+        const openMatches = response.data.filter((match: Match) => match.players.length < 4);
+        setMatches(openMatches);
       } catch (error) {
-        console.error('Erro ao carregar partidas:', error);
+        console.error('❌ Erro ao buscar partidas:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os jogos.');
       } finally {
         setLoading(false);
       }
@@ -50,10 +58,10 @@ export default function OpenMatchScreen() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      Alert.alert('Sucesso', 'Você entrou na partida!');
+      Alert.alert('✅ Sucesso', 'Você entrou na partida!');
       router.push(`/chat?matchId=${matchId}`);
     } catch (err) {
-      console.error('Erro ao entrar na partida:', err);
+      console.error('❌ Erro ao entrar na partida:', err);
       Alert.alert('Erro', 'Não foi possível entrar na partida.');
     }
   };
@@ -63,24 +71,55 @@ export default function OpenMatchScreen() {
       <BackButton />
       <Text style={styles.title}>Jogos Abertos 🎾</Text>
 
+      <Button
+        mode="contained"
+        icon="plus"
+        style={styles.createButton}
+        onPress={() => router.push('/create-open-match')}
+      >
+        Criar Novo Jogo
+      </Button>
+
       {loading ? (
         <ActivityIndicator size="large" color="#4CAF50" />
       ) : matches.length === 0 ? (
-        <Text style={styles.emptyText}>Nenhuma partida com vagas no momento.</Text>
+        <Text style={styles.emptyText}>Nenhuma partida disponível no momento.</Text>
       ) : (
-        matches.map((match) => (
-          <Card key={match._id} style={styles.card}>
-            <Card.Content>
-              <Text style={styles.cardTitle}>📍 {match.court_name} - {match.court_location}</Text>
-              <Text style={styles.detail}>📅 {match.match_date} às ⏰ {match.match_time}</Text>
-              <Text style={styles.detail}>Jogadores: {match.players.length}/4</Text>
-              <Text style={styles.detail}>Status: {match.status}</Text>
-              <Button mode="contained" style={styles.button} onPress={() => handleJoinMatch(match._id)}>
-                Juntar-se
-              </Button>
-            </Card.Content>
-          </Card>
-        ))
+        matches.map((match) => {
+          const isInMatch = userId && match.players.includes(userId);
+          const isFull = match.players.length >= 4;
+
+          return (
+            <Card key={match._id} style={styles.card}>
+              <Card.Content>
+                <Text style={styles.cardTitle}>
+                  📍 {match.court_name} - {match.court_location}
+                </Text>
+                <Text style={styles.detail}>📅 {match.match_date} às ⏰ {match.match_time}</Text>
+                <Text style={styles.detail}>👥 Jogadores: {match.players.length} / 4</Text>
+                <Text style={styles.detail}>🕹️ Status: {match.status}</Text>
+
+                {isInMatch ? (
+                  <Button mode="contained-tonal" disabled>
+                    Já está na partida
+                  </Button>
+                ) : isFull ? (
+                  <Button mode="outlined" disabled>
+                    Partida cheia
+                  </Button>
+                ) : (
+                  <Button
+                    mode="contained"
+                    style={styles.button}
+                    onPress={() => handleJoinMatch(match._id)}
+                  >
+                    Juntar-se
+                  </Button>
+                )}
+              </Card.Content>
+            </Card>
+          );
+        })
       )}
     </ScrollView>
   );
@@ -97,6 +136,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2e7d32',
     textAlign: 'center',
+    marginBottom: 15,
+  },
+  createButton: {
+    backgroundColor: '#2e7d32',
     marginBottom: 20,
   },
   card: {
