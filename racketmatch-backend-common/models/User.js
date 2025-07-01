@@ -7,8 +7,8 @@ const userSchema = new mongoose.Schema({
   skill_level: { type: Number, required: true },
   isPremium: { type: Boolean, default: false },
   premiumSince: { type: Date },
-  preferredLocations: { type: String, required: true },
-  preferredTimes: { type: String, required: true },
+  preferredLocations: { type: [String], required: true },
+  preferredTimes: { type: [String], required: true },
   location: {
     type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: { type: [Number], required: true },

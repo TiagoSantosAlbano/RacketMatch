@@ -120,3 +120,5 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+
+console.log(router.stack.map(layer => layer.route ? layer.route.path : layer.name));

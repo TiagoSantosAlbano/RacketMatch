@@ -1,5 +1,5 @@
 import { Stack, useRouter } from 'expo-router';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text, Button } from 'react-native-paper';
 
 export default function NotFoundScreen() {
@@ -9,11 +9,11 @@ export default function NotFoundScreen() {
     <>
       <Stack.Screen options={{ title: 'Página não encontrada' }} />
       <View style={styles.container}>
-        <Image
+        {/* <Image
           source={require('../assets/images/not-found.png')}
           style={styles.image}
           resizeMode="contain"
-        />
+        /> */}
 
         <Text style={styles.title}>Oops! Esta página não existe 😕</Text>
         <Text style={styles.description}>

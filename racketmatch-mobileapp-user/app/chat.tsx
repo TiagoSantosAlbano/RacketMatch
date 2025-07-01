@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -28,10 +27,10 @@ const ChatScreen = () => {
 
       {/* Estado Vazio */}
       <View style={styles.content}>
-        <Image
+        {/* <Image
           source={require('../assets/images/empty-chat.png')} // Substitui placeholder externo
           style={styles.illustration}
-        />
+        /> */}
         <Text style={styles.noChatsText}>Sem conversas ainda</Text>
         <Text style={styles.subText}>As tuas conversas aparecerão aqui</Text>
         <TouchableOpacity

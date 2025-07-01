@@ -13,13 +13,13 @@ connectDB();
 
 // 🌐 Middlewares globais
 app.use(cors({
-  origin: '*', // 🛠️ Em produção, substitui por ['http://teu-dominio.com', 'http://ip-do-mobile']
+  origin: '*', // 🛠️ Em produção, substituir por ['https://teu-dominio.com']
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 
-// 🖼️ Servir imagens da pasta "uploads"
+// 🖼️ Servir imagens estáticas da pasta "uploads"
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // 📦 Importar rotas
@@ -29,25 +29,27 @@ const matchRoutes = require('./routes/matchRoutes');
 const userRoutes = require('./routes/userRoutes');
 const premiumRoutes = require('./routes/premiumRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+// const stripeRoutes = require('./stripe/stripeRoutes'); // ✅ Stripe
 
 // 🔗 Usar rotas da API
 app.use('/api/admin-auth', adminRoutes);
 app.use('/api/admin/courts', courtRoutes);
 app.use('/api/matches', matchRoutes);
-app.use('/api/users', userRoutes); // 👈 registo/login aqui
+app.use('/api/users', userRoutes);
 app.use('/api/premium', premiumRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
+// app.use('/api/stripe', stripeRoutes); // ✅ Pagamentos com Stripe
 
-// ❌ Fallback para rotas inexistentes
-app.use((req, res) => {
-  console.warn(`❌ Rota não encontrada: ${req.originalUrl}`);
-  res.status(404).json({ message: 'Rota não encontrada' });
-});
+// // ❌ Fallback para rotas inexistentes
+// app.use((req, res) => {
+//   console.warn(`❌ Rota não encontrada: ${req.originalUrl}`);
+//   res.status(404).json({ message: 'Rota não encontrada' });
+// });
 
-// 🚀 Iniciar servidor — acessível localmente e por IP de rede
+// 🚀 Iniciar servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend ativo em:`);
   console.log(`   • http://localhost:${PORT}`);
-  console.log(`   • http://<teu-ip-local>:${PORT} 📱 (usa no mobile)`);
+  console.log(`   • http://<teu-ip-local>:${PORT} 📱`);
 });
