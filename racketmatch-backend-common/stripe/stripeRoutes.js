@@ -1,7 +1,9 @@
-// const express = require('express');
-// const router = express.Router();
-// const { createPaymentIntent } = require('./stripeController');
+// stripe/stripeRoutes.js
+const express = require('express');
+const router = express.Router();
+const stripeController = require('./stripeController');
 
-// router.post('/create-payment-intent', createPaymentIntent);
+// POST /api/stripe/payment-intent
+router.post('/payment-intent', stripeController.createCheckoutSession);
 
-// module.exports = router;
+module.exports = router;

@@ -20,7 +20,7 @@ const authMiddleware = (req, res, next) => {
 
 console.log('✅ userRoutes carregado e pronto a receber requisições.');
 
-// Testar backend
+// Rota de teste
 router.get('/ping', (req, res) => {
   res.send('✅ Rota GET /ping ativa');
 });
@@ -33,6 +33,7 @@ router.post('/register', async (req, res) => {
       preferredTimes, location, tenantId,
     } = req.body;
 
+    // Checagem básica
     if (
       !name || !email || !password || !skill_level ||
       !preferredLocations || !preferredTimes ||
@@ -51,7 +52,9 @@ router.post('/register', async (req, res) => {
 
     const newUser = new User({
       name, email, password: hashedPassword, skill_level,
-      preferredLocations, preferredTimes, location, tenantId,
+      preferredLocations: Array.isArray(preferredLocations) ? preferredLocations : [preferredLocations],
+      preferredTimes: Array.isArray(preferredTimes) ? preferredTimes : [preferredTimes],
+      location, tenantId,
     });
 
     await newUser.save();
@@ -59,7 +62,7 @@ router.post('/register', async (req, res) => {
     return res.status(201).json({
       message: 'Utilizador criado com sucesso!',
       user: {
-        id: newUser._id,
+        _id: newUser._id,
         name: newUser.name,
         email: newUser.email,
         skill_level: newUser.skill_level,
@@ -79,32 +82,21 @@ router.post('/register', async (req, res) => {
 
 // LOGIN com logs detalhados
 router.post('/login', async (req, res) => {
-  console.log('\n--- Novo pedido de LOGIN ---');
   try {
     const { email, password } = req.body;
-    console.log('Login recebido para:', email);
-
     if (!email || !password) {
-      console.log('❌ Faltam campos');
       return res.status(400).json({ message: 'Preenche o email e a password.' });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      console.log('❌ User não encontrado');
       return res.status(401).json({ message: 'Credenciais inválidas.' });
-    } else {
-      console.log('✅ User encontrado:', user.email);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('❌ Password incorreta');
       return res.status(401).json({ message: 'Credenciais inválidas.' });
     }
-
-    // Login válido
-    console.log('🔓 Login efetuado com sucesso:', user.email);
 
     const token = jwt.sign(
       { userId: user._id, email: user.email },
@@ -115,7 +107,7 @@ router.post('/login', async (req, res) => {
     return res.status(200).json({
       token,
       user: {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         skill_level: user.skill_level,
@@ -139,7 +131,7 @@ router.get('/me', authMiddleware, async (req, res) => {
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
     res.json({
-      id: user._id,
+      _id: user._id,
       name: user.name,
       email: user.email,
       isPremium: user.isPremium,
@@ -163,7 +155,18 @@ router.get('/:id', authMiddleware, async (req, res) => {
     }
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
-    res.json(user);
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isPremium: user.isPremium,
+      skill_level: user.skill_level,
+      preferredLocations: user.preferredLocations,
+      preferredTimes: user.preferredTimes,
+      tenantId: user.tenantId,
+      premiumSince: user.premiumSince,
+      lastSeen: user.lastSeen,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Erro no servidor.' });
   }
@@ -175,11 +178,13 @@ router.put('/:id', authMiddleware, async (req, res) => {
     if (req.userId !== req.params.id) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
-    const { name, skill_level } = req.body;
+    // Só atualiza se vier do body
+    const { name, skill_level, preferredLocations, preferredTimes } = req.body;
     const updateFields = {};
     if (name) updateFields.name = name;
     if (skill_level) updateFields.skill_level = skill_level;
-    // outros campos...
+    if (preferredLocations) updateFields.preferredLocations = Array.isArray(preferredLocations) ? preferredLocations : [preferredLocations];
+    if (preferredTimes) updateFields.preferredTimes = Array.isArray(preferredTimes) ? preferredTimes : [preferredTimes];
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
@@ -187,7 +192,18 @@ router.put('/:id', authMiddleware, async (req, res) => {
       { new: true }
     );
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
-    res.json(user);
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isPremium: user.isPremium,
+      skill_level: user.skill_level,
+      preferredLocations: user.preferredLocations,
+      preferredTimes: user.preferredTimes,
+      tenantId: user.tenantId,
+      premiumSince: user.premiumSince,
+      lastSeen: user.lastSeen,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao atualizar perfil.' });
   }
@@ -195,5 +211,4 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 module.exports = router;
 
-// Mostra todas as rotas carregadas
 console.log('Rotas carregadas:', router.stack.map(layer => layer.route ? layer.route.path : layer.name));

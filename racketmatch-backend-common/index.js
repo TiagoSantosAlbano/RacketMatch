@@ -8,21 +8,27 @@ const authMiddleware = require('./authMiddleware');
 
 const app = express();
 
-// Conexão à base de dados
+// DEBUG ÚTIL
+console.log('Mongo URI:', process.env.MONGODB_URI || process.env.MONGO_URI);
+console.log('Ambiente:', process.env.NODE_ENV);
+console.log('Porta configurada:', process.env.PORT);
+
+// 1. Conexão à base de dados
 connectDB();
 
-// Middlewares globais
+// 2. Middlewares globais
 app.use(cors({
-  origin: '*',
+  // Em produção substitui o '*' pelo domínio do frontend
+  origin: '*', // ['https://teudominio.pt']
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 
-// Servir imagens estáticas da pasta "uploads"
+// 3. Servir imagens estáticas da pasta "uploads"
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Importar rotas
+// 4. Importar rotas
 const adminRoutes = require('./routes/adminAuth');
 const courtRoutes = require('./routes/courtRoutes');
 const matchRoutes = require('./routes/matchRoutes');
@@ -30,28 +36,40 @@ const userRoutes = require('./routes/userRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const premiumRoutes = require('./routes/premiumRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
-// const stripeRoutes = require('./stripe/stripeRoutes');
+const stripeRoutes = require('./stripe/stripeRoutes');
 
-// Usar rotas da API
+// 5. Usar rotas da API
 app.use('/api/admin-auth', adminRoutes);
-app.use('/api/admin/courts', courtRoutes);
-app.use('/api/courts', courtRoutes);       // <--- ESSENCIAL!
+app.use('/api/admin/courts', courtRoutes);   // Admin courts
+app.use('/api/courts', courtRoutes);         // Courts públicas
 app.use('/api/matches', matchRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/premium', premiumRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
-// app.use('/api/stripe', stripeRoutes);
+app.use('/api/stripe', stripeRoutes);
 
-// Fallback para rotas inexistentes
+// 6. Rotas Stripe (podes ajustar depois)
+app.get('/pagamento/sucesso', (req, res) => {
+  res.send('✅ Pagamento realizado com sucesso!');
+});
+app.get('/pagamento/cancelado', (req, res) => {
+  res.send('❌ Pagamento cancelado.');
+});
+
+// 7. Fallback para rotas inexistentes
 app.use((req, res) => {
   console.warn(`❌ Rota não encontrada: ${req.originalUrl}`);
   res.status(404).json({ message: 'Rota não encontrada' });
 });
 
+// 8. Iniciar servidor
 const PORT = process.env.PORT || 5000;
+const PUBLIC_IP = process.env.PUBLIC_IP || '31.97.177.93'; // Altera se o IP mudar
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend ativo em:`);
   console.log(`   • http://localhost:${PORT}`);
   console.log(`   • http://<teu-ip-local>:${PORT} 📱`);
+  console.log(`   • http://${PUBLIC_IP}:${PORT} 🌍`);
 });
