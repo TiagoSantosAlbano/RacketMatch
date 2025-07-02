@@ -7,7 +7,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -16,36 +15,48 @@ import axios from 'axios';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuth(); // ✅ usa o contexto global de auth
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Erro', 'Preenche todos os campos.');
+      setError('Preenche todos os campos.');
       return;
     }
 
-    try {
-      setLoading(true);
+    setError(null);
+    setLoading(true);
 
+    try {
       const response = await axios.post('http://192.168.1.84:5000/api/users/login', {
         email,
         password,
       });
 
+      // Debug log para ver a resposta do backend
+      console.log('RESPOSTA BACKEND:', response.data);
+
       const { token, user } = response.data;
 
-      await login(token, user); // ✅ guarda nos estados globais + AsyncStorage
+      if (!token) {
+        setError('Login inválido. Verifica as credenciais.');
+        return;
+      }
 
-      Alert.alert('Bem-vindo!', `Olá, ${user.name}!`);
-      router.replace('/'); // ou /home ou outra página protegida
+      // Faz login (normalmente já guarda o token no AsyncStorage!)
+      await login(token, user);
+
+      // Redireciona para a home page correta
+      router.replace('/home'); // ou '/community' se preferires
+
     } catch (error: any) {
       console.error('Erro no login:', error?.response?.data || error);
-      Alert.alert('Erro', error?.response?.data?.message || 'Falha no login.');
+      setError(error?.response?.data?.message || 'Falha no login.');
     } finally {
       setLoading(false);
     }
@@ -60,6 +71,10 @@ export default function LoginScreen() {
         <Text style={styles.logo}>🎾 RacketMatch</Text>
         <Text style={styles.title}>Iniciar Sessão</Text>
 
+        {error && (
+          <Text style={styles.errorText}>{error}</Text>
+        )}
+
         <TextInput
           style={styles.input}
           placeholder="📧 Email"
@@ -68,6 +83,7 @@ export default function LoginScreen() {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          editable={!loading}
         />
 
         <TextInput
@@ -78,18 +94,24 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           autoCapitalize="none"
+          editable={!loading}
         />
 
         <TouchableOpacity
           style={styles.togglePassword}
           onPress={() => setShowPassword(!showPassword)}
+          disabled={loading}
         >
           <Text style={styles.togglePasswordText}>
             {showPassword ? '🙈 Esconder' : '👁️ Mostrar'}
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}
+        >
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
@@ -97,7 +119,10 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push('/register')}>
+        <TouchableOpacity
+          onPress={() => router.push('/register')}
+          disabled={loading}
+        >
           <Text style={styles.registerText}>
             Não tens conta? <Text style={styles.registerLink}>Regista-te</Text>
           </Text>
@@ -144,6 +169,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     marginBottom: 12,
+  },
+  errorText: {
+    color: '#ef4444',
+    textAlign: 'center',
+    marginBottom: 12,
+    fontSize: 15,
+    fontWeight: 'bold'
   },
   togglePassword: {
     alignSelf: 'flex-end',

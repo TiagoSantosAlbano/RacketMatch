@@ -34,8 +34,8 @@ export default function Login() {
         setAdminExists(exists);
         if (!exists) navigate('/register');
       } catch (error) {
-        console.error('Erro ao verificar admin:', error);
-        setAdminExists(true); // fallback: permite login
+        console.error(error);
+        setAdminExists(true);
         setError('Erro ao verificar o sistema. Verifica o backend.');
       }
     };
@@ -58,8 +58,11 @@ export default function Login() {
 
     try {
       const res = await loginAdmin(form);
+      console.log("RESPOSTA BACKEND:", res); // Debug
       login(res.token, res.user);
+      console.log("Login no contexto feito, token:", res.token, "user:", res.user); // Debug
       navigate('/dashboard');
+      console.log("NAVEGOU para dashboard"); // Debug
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || 'Credenciais inválidas.');
@@ -81,10 +84,13 @@ export default function Login() {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-white dark:bg-gray-900 px-4 animate-fade-in">
+      {/* Botão Dark Mode */}
       <button
         onClick={toggleDarkMode}
         className="absolute top-4 left-4 z-10 text-2xl text-gray-600 dark:text-gray-300 hover:scale-110 transition"
         title="Alternar modo"
+        type="button"
+        tabIndex={-1}
       >
         🌙
       </button>
@@ -92,6 +98,7 @@ export default function Login() {
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-xl p-6 sm:p-8 border border-green-300 dark:border-gray-600 text-gray-800 dark:text-gray-100"
+        autoComplete="on"
       >
         <div className="text-center mb-6">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-green-700 dark:text-green-400">
@@ -140,12 +147,14 @@ export default function Login() {
               className="absolute right-3 top-[42px] text-xl text-gray-500 dark:text-gray-300"
               onClick={() => setShowPassword(!showPassword)}
               tabIndex={-1}
+              aria-label={showPassword ? "Esconder password" : "Mostrar password"}
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
           </div>
         </div>
 
+        {/* Botão de login */}
         <button
           type="submit"
           disabled={loading || !form.email || !form.password}
@@ -154,6 +163,7 @@ export default function Login() {
           {loading ? 'A entrar...' : '🔓 Entrar'}
         </button>
 
+        {/* Botão de registo */}
         <button
           type="button"
           onClick={() => navigate('/register')}
@@ -163,6 +173,7 @@ export default function Login() {
           ✍️ Criar Conta
         </button>
 
+        {/* Mensagem de erro */}
         {error && (
           <div className="text-red-600 text-sm text-center mt-4">{error}</div>
         )}

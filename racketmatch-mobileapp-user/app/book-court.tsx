@@ -26,12 +26,13 @@ export default function BookCourtScreen() {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Carregar courts ao montar o componente
   const fetchCourts = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/courts');
+      const res = await axios.get('http://192.168.1.84:5000/api/courts');
       setCourts(res.data);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível carregar as quadras. Verifique sua conexão.');
+      Alert.alert('Erro', 'Não foi possível carregar as quadras. Verifique a sua conexão.');
     } finally {
       setLoading(false);
     }
@@ -43,12 +44,18 @@ export default function BookCourtScreen() {
     }
 
     try {
-      const token = await AsyncStorage.getItem('authToken');
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        Alert.alert('Erro', 'Token de autenticação não encontrado. Faça login novamente.');
+        return;
+      }
+
       await axios.post(
-        'http://localhost:5000/api/bookings',
+        'http://192.168.1.84:5000/api/bookings',
         {
-          courtId: selectedCourt,
+          court: selectedCourt,
           date: date.toISOString(),
+          time: date.toTimeString().slice(0, 5), // Exemplo para guardar a hora separada
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -58,9 +65,9 @@ export default function BookCourtScreen() {
       Alert.alert('✅ Sucesso', 'Reserva efetuada com sucesso!');
       setSelectedCourt(null);
       setDate(new Date());
-    } catch (error) {
-      console.error('Erro na reserva:', error);
-      Alert.alert('Erro', 'Falha ao efetuar a reserva. Tente novamente.');
+    } catch (error: any) {
+      console.error('Erro na reserva:', error?.response?.data || error);
+      Alert.alert('Erro', error?.response?.data?.message || 'Falha ao efetuar a reserva. Tente novamente.');
     }
   };
 
@@ -197,3 +204,4 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
+

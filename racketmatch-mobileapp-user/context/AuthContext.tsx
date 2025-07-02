@@ -1,10 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface User {
+// Interface User com todos os campos do backend!
+export interface User {
+  _id: string;
   name: string;
   email: string;
-  _id: string;
+  isPremium?: boolean;
+  skill_level: number;
+  preferredLocations: string[];
+  preferredTimes: string[];
+  tenantId: string;
+  // Se tiveres outros campos, adiciona aqui!
 }
 
 interface AuthContextType {
@@ -25,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const loadSession = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem('token');
+        const storedToken = await AsyncStorage.getItem('authToken');
         const storedUser = await AsyncStorage.getItem('user');
 
         if (storedToken && storedUser) {
@@ -45,14 +52,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (token: string, user: User) => {
     setToken(token);
     setUser(user);
-    await AsyncStorage.setItem('token', token);
+    await AsyncStorage.setItem('authToken', token);
     await AsyncStorage.setItem('user', JSON.stringify(user));
   };
 
   const logout = async () => {
     setToken(null);
     setUser(null);
-    await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem('authToken');
     await AsyncStorage.removeItem('user');
   };
 

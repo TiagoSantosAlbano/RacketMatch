@@ -5,11 +5,12 @@ import {
   ScrollView,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { Card, Paragraph, Button } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import BackButton from '../../components/BackButton';
+import BackButton from '../components/BackButton';
 
 interface Booking {
   _id: string;
@@ -52,6 +53,32 @@ export default function BookingsListScreen() {
     fetchBookings();
   }, [fetchBookings]);
 
+  // Cancelar reserva
+  const handleCancel = async (bookingId: string) => {
+    Alert.alert(
+      'Cancelar Reserva',
+      'Tem certeza que deseja cancelar esta reserva?',
+      [
+        { text: 'Não', style: 'cancel' },
+        {
+          text: 'Sim',
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem('token');
+              await axios.delete(`http://192.168.1.84:5000/api/bookings/${bookingId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              Alert.alert('Reserva cancelada!');
+              fetchBookings();
+            } catch (error) {
+              Alert.alert('Erro', 'Não foi possível cancelar a reserva.');
+            }
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <ScrollView
       style={styles.container}
@@ -88,6 +115,17 @@ export default function BookingsListScreen() {
                   {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                 </Text>
               )}
+              {/* Botão cancelar apenas se reserva está ativa */}
+              {booking.status !== 'cancelada' && (
+                <Button
+                  mode="outlined"
+                  onPress={() => handleCancel(booking._id)}
+                  style={{ marginTop: 10, borderColor: '#d32f2f' }}
+                  textColor="#d32f2f"
+                >
+                  Cancelar Reserva
+                </Button>
+              )}
             </Card.Content>
           </Card>
         ))
@@ -114,4 +152,3 @@ const styles = StyleSheet.create({
   noBookingText: { color: '#888', textAlign: 'center', fontSize: 16, marginTop: 20 },
   refreshButton: { alignSelf: 'center', marginVertical: 6 },
 });
-

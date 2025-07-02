@@ -10,12 +10,10 @@ export default function Index() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = await AsyncStorage.getItem('authToken');
+        const token = await AsyncStorage.getItem('authToken'); // Corrigido!
         if (token) {
-          // ✅ Já autenticado → vai para a Home
-          router.replace('/home'); // ou '/' se for ali que está teu HomeScreen
+          router.replace('/home'); // Ou '/' se o teu HomeScreen for no root
         } else {
-          // ❌ Sem token → vai para login
           router.replace('/login');
         }
       } catch (error) {
@@ -25,7 +23,6 @@ export default function Index() {
         setLoading(false);
       }
     };
-
     checkAuth();
   }, []);
 
