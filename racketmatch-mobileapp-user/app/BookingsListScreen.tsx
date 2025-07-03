@@ -34,7 +34,7 @@ export default function BookingsListScreen() {
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error('Token não encontrado. Faça login novamente.');
 
-      const res = await axios.get('http://192.168.1.84:5000/api/bookings', {
+      const res = await axios.get('http://31.97.177.93:5000/api/bookings', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -64,7 +64,7 @@ export default function BookingsListScreen() {
           onPress: async () => {
             try {
               const token = await AsyncStorage.getItem('token');
-              await axios.delete(`http://192.168.1.84:5000/api/bookings/${bookingId}`, {
+              await axios.delete(`http://31.97.177.93:5000/api/bookings/${bookingId}`, {
                 headers: { Authorization: `Bearer ${token}` },
               });
               Alert.alert('Reserva cancelada!');

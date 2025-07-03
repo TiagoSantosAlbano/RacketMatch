@@ -15,7 +15,7 @@ const PremiumCard = () => {
         const token = await AsyncStorage.getItem("authToken");
         if (!token) return;
 
-        const res = await axios.get("http://localhost:5000/api/user", {
+        const res = await axios.get("http://31.97.177.93:5000/api/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

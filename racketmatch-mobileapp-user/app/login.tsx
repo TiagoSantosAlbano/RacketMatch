@@ -33,7 +33,7 @@ export default function LoginScreen() {
 
     try {
       // Altera para o IP/local correto do teu backend
-      const response = await axios.post('http://192.168.1.84:5000/api/users/login', {
+      const response = await axios.post('http://31.97.177.93:5000/api/users/login', {
         email,
         password,
       });

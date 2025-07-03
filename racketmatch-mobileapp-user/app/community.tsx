@@ -33,7 +33,7 @@ export default function CommunityScreen() {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/posts');
+      const res = await axios.get('http://31.97.177.93:5000/api/posts');
       setPosts(res.data);
     } catch (err) {
       console.error('Erro ao buscar posts:', err);
@@ -50,7 +50,7 @@ export default function CommunityScreen() {
       setPosting(true);
       const token = await AsyncStorage.getItem('authToken');
       const res = await axios.post(
-        'http://localhost:5000/api/posts',
+        'http://31.97.177.93:5000/api/posts',
         { content: newPost },
         { headers: { Authorization: `Bearer ${token}` } }
       );

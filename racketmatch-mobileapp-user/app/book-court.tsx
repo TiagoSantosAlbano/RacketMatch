@@ -29,7 +29,7 @@ export default function BookCourtScreen() {
 
   const fetchCourts = async () => {
     try {
-      const res = await axios.get('http://192.168.1.84:5000/api/courts');
+      const res = await axios.get('http://31.97.177.93:5000/api/courts');
       setCourts(res.data);
     } catch (error) {
       Alert.alert('Erro', 'Não foi possível carregar as quadras. Verifique a sua conexão.');
@@ -51,7 +51,7 @@ export default function BookCourtScreen() {
       }
 
       await axios.post(
-        'http://192.168.1.84:5000/api/bookings',
+        'http://31.97.177.93:5000/api/bookings',
         {
           court: selectedCourt,
           date: date.toISOString(),

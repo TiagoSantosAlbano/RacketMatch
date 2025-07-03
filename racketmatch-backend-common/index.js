@@ -18,7 +18,7 @@ connectDB();
 
 // 2. Middlewares globais
 app.use(cors({
-  origin: '*', // Em produção, substitui por ['https://teudominio.pt']
+  origin: ['http://localhost:8081','http://31.97.177.93:8081'  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));

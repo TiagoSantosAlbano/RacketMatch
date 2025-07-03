@@ -36,7 +36,7 @@ const HomeScreen = () => {
 
         const token = await AsyncStorage.getItem('authToken');
         if (token) {
-          const response = await axios.get('http://localhost:5000/api/user', {
+          const response = await axios.get('http://31.97.177.93:5000/api/user', {
             headers: { Authorization: `Bearer ${token}` },
           });
           const userData = response.data;

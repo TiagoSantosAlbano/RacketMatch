@@ -32,7 +32,7 @@ export default function OpenMatchScreen() {
           setUserId(parsed.id || parsed._id);
         }
 
-        const response = await axios.get('http://localhost:5000/api/matches', {
+        const response = await axios.get('http://31.97.177.93:5000/api/matches', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -53,7 +53,7 @@ export default function OpenMatchScreen() {
     try {
       const token = await AsyncStorage.getItem('authToken');
       await axios.post(
-        `http://localhost:5000/api/matches/${matchId}/join`,
+        `http://31.97.177.93:5000/api/matches/${matchId}/join`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
