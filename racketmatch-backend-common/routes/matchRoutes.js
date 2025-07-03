@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const matchController = require('../controllers/matchController');
-const authMiddleware = require('../authMiddleware');
+const authMiddleware = require('../middleware/authMiddleware');
 
 // Rotas para partidas existentes
 router.get('/', matchController.getAllMatches);

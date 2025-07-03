@@ -7,7 +7,7 @@ const getAllMatches = async (req, res) => {
     const matches = await Match.find();
     res.json(matches);
   } catch (error) {
-    console.error('Erro ao buscar partidas:', error);
+    console.error('❌ Erro ao buscar partidas:', error);
     res.status(500).json({ message: 'Erro ao buscar partidas.' });
   }
 };
@@ -19,7 +19,7 @@ const createMatch = async (req, res) => {
     await match.save();
     res.status(201).json(match);
   } catch (error) {
-    console.error('Erro ao criar partida:', error);
+    console.error('❌ Erro ao criar partida:', error);
     res.status(500).json({ message: 'Erro ao criar partida.' });
   }
 };
@@ -27,7 +27,7 @@ const createMatch = async (req, res) => {
 // Matchmaking com Premium + Geolocalização + Habilidade + Horário
 const getPremiumMatchSuggestions = async (req, res) => {
   try {
-    const currentUser = await User.findById(req.user.id);
+    const currentUser = await User.findById(req.user.id || req.userId);
     if (!currentUser || !currentUser.location) {
       return res.status(400).json({ message: 'Utilizador não tem localização definida.' });
     }
@@ -60,14 +60,14 @@ const getPremiumMatchSuggestions = async (req, res) => {
       },
       {
         $project: {
-          password: 0,
+          password: 0, // Nunca retornar password
         },
       },
     ]);
 
     res.json(users);
   } catch (error) {
-    console.error('Erro no matchmaking:', error);
+    console.error('❌ Erro no matchmaking:', error);
     res.status(500).json({ message: 'Erro ao buscar sugestões de partidas.' });
   }
 };

@@ -1,50 +1,23 @@
+// backend/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-require('dotenv').config();
 
-/**
- * Middleware para autenticação via JWT.
- * Espera header: Authorization: Bearer <token>
- */
-const authenticateToken = async (req, res, next) => {
+function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Exige "Bearer <token>"
+  const token = authHeader && authHeader.split(' ')[1]; // "Bearer <token>"
 
   if (!token) {
-    console.warn('🚫 Token não fornecido na requisição.');
-    return res.status(401).json({ message: 'Token não fornecido.' });
+    return res.status(401).json({ message: 'Token não fornecido' });
   }
 
-  try {
-    // Valida e decodifica o token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Token inválido' });
 
-    // decoded.id é obrigatório! (Vê como está o sign no login)
-    if (!decoded.id) {
-      console.warn('❌ Token decodificado mas sem id de usuário.');
-      return res.status(401).json({ message: 'Token inválido (sem id de usuário).' });
-    }
-
-    // Procura o usuário
-    const user = await User.findById(decoded.id);
-    if (!user) {
-      console.warn('❌ Token válido, mas usuário não encontrado.');
-      return res.status(401).json({ message: 'Usuário não encontrado.' });
-    }
-
-    // Atualiza última atividade do usuário (opcional)
-    user.lastSeen = new Date();
-    await user.save();
-
-    // Injeta user e userId no req para os controladores
     req.user = user;
-    req.userId = user._id.toString(); // <<--- Isto é útil para rotas que usam req.userId!
-
+    req.userId = user.id; // Adicionar userId para compatibilidade
     next();
-  } catch (error) {
-    console.error('❌ Erro ao verificar o token:', error.message);
-    return res.status(403).json({ message: 'Token inválido ou expirado.' });
-  }
-};
+  });
+}
 
-module.exports = authenticateToken;
+// Exportar tanto como função direta quanto como objeto
+module.exports = verifyToken;
+module.exports.verifyToken = verifyToken;

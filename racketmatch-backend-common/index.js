@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 const connectDB = require('./db');
-const authMiddleware = require('./authMiddleware'); // Certifica-te que o caminho está correto!
+const authMiddleware = require('./middleware/authMiddleware'); // Caminho certo! (está na pasta middleware)
 
 const app = express();
 
@@ -18,7 +18,7 @@ connectDB();
 
 // 2. Middlewares globais
 app.use(cors({
-  origin: '*', // Em produção, usa ['https://teudominio.pt']
+  origin: '*', // Em produção, substitui por ['https://teudominio.pt']
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -27,7 +27,7 @@ app.use(express.json());
 // 3. Servir imagens estáticas da pasta "public/uploads"
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// 4. Importar rotas
+// 4. Importar rotas (caminhos já relativos à raíz do projeto)
 const adminRoutes = require('./routes/adminAuth');
 const courtRoutes = require('./routes/courtRoutes');
 const matchRoutes = require('./routes/matchRoutes');
@@ -48,7 +48,7 @@ app.use('/api/premium', premiumRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
 app.use('/api/paypal', paypalRoutes); // PAYPAL
 
-// 6. Rotas de resultado de pagamento
+// 6. Rotas de resultado de pagamento (exemplo básico)
 app.get('/pagamento/sucesso', (req, res) => {
   res.send('✅ Pagamento realizado com sucesso!');
 });

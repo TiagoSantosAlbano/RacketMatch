@@ -2,7 +2,11 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const authMiddleware = require('../middleware/authMiddleware'); // Certifica-te do path!
+
+// Importação do middleware
+const authMiddleware = require('../middleware/authMiddleware');
+
+console.log('✅ authMiddleware carregado:', typeof authMiddleware);
 
 const router = express.Router();
 
@@ -116,8 +120,10 @@ router.post('/login', async (req, res) => {
 // GET dados do utilizador autenticado
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const user = req.user; // Já está disponível via middleware!
+    // Buscar o utilizador pela ID do token
+    const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
+    
     res.json({
       _id: user._id,
       name: user.name,
@@ -131,6 +137,7 @@ router.get('/me', authMiddleware, async (req, res) => {
       lastSeen: user.lastSeen,
     });
   } catch (error) {
+    console.error('❌ Erro ao buscar utilizador:', error);
     res.status(500).json({ message: 'Erro ao buscar utilizador.' });
   }
 });
@@ -156,6 +163,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
       lastSeen: user.lastSeen,
     });
   } catch (error) {
+    console.error('❌ Erro ao buscar utilizador por ID:', error);
     res.status(500).json({ message: 'Erro no servidor.' });
   }
 });
@@ -221,6 +229,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
     res.json({ message: 'Utilizador eliminado com sucesso.' });
   } catch (error) {
+    console.error('❌ Erro ao eliminar utilizador:', error);
     res.status(500).json({ message: 'Erro ao eliminar utilizador.' });
   }
 });
@@ -238,8 +247,10 @@ router.post('/:id/activate-premium', async (req, res) => {
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
     res.json({ message: 'Premium ativado!', user });
   } catch (err) {
+    console.error('❌ Erro ao ativar premium:', err);
     res.status(500).json({ message: 'Erro ao ativar premium.' });
   }
 });
 
+// *** NÃO ALTERAR! ***
 module.exports = router;

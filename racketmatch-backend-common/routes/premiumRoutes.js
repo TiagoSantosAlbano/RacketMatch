@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const authMiddleware = require('../authMiddleware'); // middleware de autenticação
+const authMiddleware = require('../middleware/authMiddleware'); // middleware de autenticação
 
 // Ativação do modo Premium
 router.post('/activate', authMiddleware, async (req, res) => {
