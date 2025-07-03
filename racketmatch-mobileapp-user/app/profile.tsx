@@ -12,7 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../config/api'; // Usa o teu ficheiro api.ts
+import api from '../config/api';
 
 export default function ProfileScreen() {
   const { user, logout, login, loading } = useAuth();
@@ -21,22 +21,18 @@ export default function ProfileScreen() {
   const [skill, setSkill] = useState(user?.skill_level?.toString() || '');
   const [locations, setLocations] = useState(
     Array.isArray(user?.preferredLocations)
-      ? user?.preferredLocations.join(', ')
-      : user?.preferredLocations
-      ? String(user?.preferredLocations)
-      : ''
+      ? user.preferredLocations.join(', ')
+      : (user?.preferredLocations || '')
   );
   const [times, setTimes] = useState(
     Array.isArray(user?.preferredTimes)
-      ? user?.preferredTimes.join(', ')
-      : user?.preferredTimes
-      ? String(user?.preferredTimes)
-      : ''
+      ? user.preferredTimes.join(', ')
+      : (user?.preferredTimes || '')
   );
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  // Se estiver carregando, mostra um spinner
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -45,32 +41,41 @@ export default function ProfileScreen() {
       </View>
     );
   }
-
-  // Se não tiver utilizador, redireciona para login
   if (!user) {
     router.replace('/login');
     return null;
   }
 
-  // Função para guardar as alterações
+  // Helpers para mostrar arrays
+  const renderLocations = () => Array.isArray(user.preferredLocations)
+    ? user.preferredLocations.join(', ')
+    : (user.preferredLocations || '');
+  const renderTimes = () => Array.isArray(user.preferredTimes)
+    ? user.preferredTimes.join(', ')
+    : (user.preferredTimes || '');
+
+  // Atualizar perfil
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
     try {
       const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+        Alert.alert('Erro', 'Sessão expirada. Faz login novamente.');
+        await logout();
+        router.replace('/login');
+        return;
+      }
       const payload = {
         name,
         skill_level: Number(skill),
         preferredLocations: locations.split(',').map(l => l.trim()).filter(Boolean),
         preferredTimes: times.split(',').map(t => t.trim()).filter(Boolean),
       };
-      const response = await api.put(
-        `/users/${user._id}`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // Atualiza user global
-      await login(token!, response.data);
+      const response = await api.put(`/users/${user._id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      await login(token, response.data);
       setEditMode(false);
       Alert.alert('Sucesso', 'Dados atualizados!');
     } catch (error) {
@@ -80,36 +85,51 @@ export default function ProfileScreen() {
     }
   };
 
-  // Função logout que também redireciona
+  // Eliminar user
+  const handleDelete = async () => {
+    if (!user) return;
+    Alert.alert(
+      'Eliminar conta',
+      'Tens a certeza? Esta ação é irreversível.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sim, eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              const token = await AsyncStorage.getItem('authToken');
+              if (!token) {
+                Alert.alert('Erro', 'Sessão expirada. Faz login novamente.');
+                await logout();
+                router.replace('/login');
+                return;
+              }
+              await api.delete(`/users/${user._id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              await logout();
+              router.replace('/login');
+            } catch (e) {
+              Alert.alert('Erro', 'Erro ao eliminar a conta.');
+            } finally {
+              setDeleting(false);
+            }
+          },
+        }
+      ]
+    );
+  };
+
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
   };
 
-  // Render helpers
-  const renderLocations = () => {
-    if (Array.isArray(user.preferredLocations)) {
-      return user.preferredLocations.join(', ');
-    }
-    if (user.preferredLocations) {
-      return String(user.preferredLocations);
-    }
-    return '';
-  };
-
-  const renderTimes = () => {
-    if (Array.isArray(user.preferredTimes)) {
-      return user.preferredTimes.join(', ');
-    }
-    if (user.preferredTimes) {
-      return String(user.preferredTimes);
-    }
-    return '';
-  };
-
   return (
     <View style={styles.container}>
-      {/* Botão voltar para Home */}
+      {/* Botão voltar */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/home')}>
         <Icon name="arrow-left" size={26} color="#00c4b4" />
       </TouchableOpacity>
@@ -188,6 +208,15 @@ export default function ProfileScreen() {
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.logoutButton, { backgroundColor: '#a30000', marginTop: 8 }]}
+        onPress={handleDelete}
+        disabled={deleting}
+      >
+        <Text style={styles.logoutButtonText}>
+          {deleting ? 'A eliminar...' : 'Eliminar Conta'}
+        </Text>
       </TouchableOpacity>
     </View>
   );

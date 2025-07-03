@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator, Text } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator, Text, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Button, Card, Paragraph } from 'react-native-paper';
 import BackButton from '../components/BackButton';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+// Coloca aqui o link do teu PayPal, se mudares!
+const PAYPAL_LINK = "https://www.paypal.com/ncp/payment/6SXUMFZE22QRE";
+// IP público do backend
+const API_URL = 'http://31.97.177.93:5000';
 
 export default function PremiumScreen() {
   const [isPremium, setIsPremium] = useState(false);
@@ -13,7 +19,7 @@ export default function PremiumScreen() {
     const checkStatus = async () => {
       try {
         const token = await AsyncStorage.getItem('authToken');
-        const res = await axios.get('http://localhost:5000/api/user', {
+        const res = await axios.get(`${API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setIsPremium(res.data.isPremium);
@@ -26,17 +32,13 @@ export default function PremiumScreen() {
     checkStatus();
   }, []);
 
-  const activatePremium = async () => {
-    try {
-      const token = await AsyncStorage.getItem('authToken');
-      await axios.post('http://localhost:5000/api/activate-premium', {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      Alert.alert('Sucesso', 'Premium ativado com sucesso!');
-      setIsPremium(true);
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível ativar o Premium.');
-    }
+  // Não ativa premium automático. Só mostra instrução.
+  const handlePaypal = () => {
+    Linking.openURL(PAYPAL_LINK);
+    Alert.alert(
+      "Após pagamento",
+      "Envia o comprovativo para o suporte da app ou email para ativar o Premium em minutos."
+    );
   };
 
   if (loading) {
@@ -56,13 +58,24 @@ export default function PremiumScreen() {
           <Text style={styles.title}>RacketMatch Premium 🎾</Text>
           <Paragraph style={styles.paragraph}>💰 3,99€/mês</Paragraph>
           <Paragraph style={styles.paragraph}>✅ Prioridade no matching</Paragraph>
-          <Paragraph style={styles.paragraph}>🎯 Prioridade nas reservas</Paragraph>
+          <Paragraph style={styles.paragraph}>🎯 Perfil em destaque</Paragraph>
           {isPremium ? (
             <Text style={styles.success}>Já és membro Premium! 🏆</Text>
           ) : (
-            <Button mode="contained" onPress={activatePremium} style={styles.button}>
-              Ativar Premium
-            </Button>
+            <>
+              <Button
+                mode="contained"
+                icon={() => <Icon name="paypal" size={24} color="#003087" />}
+                onPress={handlePaypal}
+                style={styles.button}
+                labelStyle={{ color: '#003087', fontWeight: 'bold', fontSize: 18 }}
+              >
+                Comprar com PayPal
+              </Button>
+              <Text style={styles.info}>
+                Vais ser redirecionado para o PayPal. Envia o comprovativo para o suporte da app para ativação imediata.
+              </Text>
+            </>
           )}
         </Card.Content>
       </Card>
@@ -77,6 +90,7 @@ const styles = StyleSheet.create({
   card: { borderRadius: 12, elevation: 5, backgroundColor: '#fff', padding: 10 },
   title: { fontSize: 24, fontWeight: 'bold', color: '#2e7d32', textAlign: 'center', marginBottom: 15 },
   paragraph: { fontSize: 14, color: '#444', marginBottom: 8 },
-  button: { marginTop: 20, backgroundColor: '#2e7d32' },
+  button: { marginTop: 20, backgroundColor: '#ffc439', borderRadius: 28 },
   success: { marginTop: 20, textAlign: 'center', fontWeight: 'bold', color: '#2e7d32' },
+  info: { marginTop: 16, fontSize: 15, color: '#555', textAlign: 'center' },
 });

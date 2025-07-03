@@ -18,7 +18,6 @@ connectDB();
 
 // 2. Middlewares globais
 app.use(cors({
-  // Em produção substitui o '*' pelo domínio do frontend
   origin: '*', // ['https://teudominio.pt']
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -36,7 +35,9 @@ const userRoutes = require('./routes/userRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const premiumRoutes = require('./routes/premiumRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
-const stripeRoutes = require('./stripe/stripeRoutes');
+
+// PAYPAL: importa a rota nova
+const paypalRoutes = require('./routes/paypalRoutes'); // <-- ADICIONA ESTA LINHA
 
 // 5. Usar rotas da API
 app.use('/api/admin-auth', adminRoutes);
@@ -47,14 +48,21 @@ app.use('/api/users', userRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/premium', premiumRoutes);
 app.use('/api/notifications', authMiddleware, notificationRoutes);
-app.use('/api/stripe', stripeRoutes);
 
-// 6. Rotas Stripe (podes ajustar depois)
+// PAYPAL: ativa as rotas paypal
+app.use('/api/paypal', paypalRoutes);        // <-- ADICIONA ESTA LINHA
+
+// 6. Rotas PayPal de sucesso/cancelamento
 app.get('/pagamento/sucesso', (req, res) => {
   res.send('✅ Pagamento realizado com sucesso!');
 });
 app.get('/pagamento/cancelado', (req, res) => {
   res.send('❌ Pagamento cancelado.');
+});
+
+// PAYPAL: rota para cancelamento
+app.get('/paypal-cancel', (req, res) => {
+  res.send('❌ Pagamento PayPal cancelado.');
 });
 
 // 7. Fallback para rotas inexistentes
@@ -65,7 +73,7 @@ app.use((req, res) => {
 
 // 8. Iniciar servidor
 const PORT = process.env.PORT || 5000;
-const PUBLIC_IP = process.env.PUBLIC_IP || '31.97.177.93'; // Altera se o IP mudar
+const PUBLIC_IP = process.env.PUBLIC_IP || '31.97.177.93';
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend ativo em:`);

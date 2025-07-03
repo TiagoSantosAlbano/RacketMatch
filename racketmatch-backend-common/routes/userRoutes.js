@@ -33,7 +33,6 @@ router.post('/register', async (req, res) => {
       preferredTimes, location, tenantId,
     } = req.body;
 
-    // Checagem básica
     if (
       !name || !email || !password || !skill_level ||
       !preferredLocations || !preferredTimes ||
@@ -51,10 +50,14 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      name, email, password: hashedPassword, skill_level,
+      name,
+      email,
+      password: hashedPassword,
+      skill_level,
       preferredLocations: Array.isArray(preferredLocations) ? preferredLocations : [preferredLocations],
       preferredTimes: Array.isArray(preferredTimes) ? preferredTimes : [preferredTimes],
-      location, tenantId,
+      location,
+      tenantId,
     });
 
     await newUser.save();
@@ -80,7 +83,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// LOGIN com logs detalhados
+// LOGIN
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,14 +92,10 @@ router.post('/login', async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: 'Credenciais inválidas.' });
-    }
+    if (!user) return res.status(401).json({ message: 'Credenciais inválidas.' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Credenciais inválidas.' });
-    }
+    if (!isMatch) return res.status(401).json({ message: 'Credenciais inválidas.' });
 
     const token = jwt.sign(
       { userId: user._id, email: user.email },
@@ -178,13 +177,24 @@ router.put('/:id', authMiddleware, async (req, res) => {
     if (req.userId !== req.params.id) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
-    // Só atualiza se vier do body
     const { name, skill_level, preferredLocations, preferredTimes } = req.body;
     const updateFields = {};
     if (name) updateFields.name = name;
     if (skill_level) updateFields.skill_level = skill_level;
-    if (preferredLocations) updateFields.preferredLocations = Array.isArray(preferredLocations) ? preferredLocations : [preferredLocations];
-    if (preferredTimes) updateFields.preferredTimes = Array.isArray(preferredTimes) ? preferredTimes : [preferredTimes];
+    if (preferredLocations !== undefined) {
+      if (Array.isArray(preferredLocations)) {
+        updateFields.preferredLocations = preferredLocations.map(String);
+      } else if (typeof preferredLocations === "string") {
+        updateFields.preferredLocations = preferredLocations.split(',').map(l => l.trim());
+      }
+    }
+    if (preferredTimes !== undefined) {
+      if (Array.isArray(preferredTimes)) {
+        updateFields.preferredTimes = preferredTimes.map(String);
+      } else if (typeof preferredTimes === "string") {
+        updateFields.preferredTimes = preferredTimes.split(',').map(t => t.trim());
+      }
+    }
 
     const user = await User.findByIdAndUpdate(
       req.params.id,
@@ -192,6 +202,9 @@ router.put('/:id', authMiddleware, async (req, res) => {
       { new: true }
     );
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
+
+    console.log('✅ Utilizador atualizado:', user);
+
     res.json({
       _id: user._id,
       name: user.name,
@@ -205,7 +218,38 @@ router.put('/:id', authMiddleware, async (req, res) => {
       lastSeen: user.lastSeen,
     });
   } catch (error) {
+    console.error('❌ Erro ao atualizar perfil:', error);
     res.status(500).json({ message: 'Erro ao atualizar perfil.' });
+  }
+});
+
+// DELETE utilizador (apenas o próprio)
+router.delete('/:id', authMiddleware, async (req, res) => {
+  try {
+    if (req.userId !== req.params.id) {
+      return res.status(403).json({ message: 'Acesso negado.' });
+    }
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Utilizador eliminado com sucesso.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao eliminar utilizador.' });
+  }
+});
+
+// Ativar Premium manualmente (admin manual)
+router.post('/:id/activate-premium', async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: { isPremium: true, premiumSince: new Date() }
+      },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
+    res.json({ message: 'Premium ativado!', user });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao ativar premium.' });
   }
 });
 
