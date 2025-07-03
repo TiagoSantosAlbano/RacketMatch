@@ -10,12 +10,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,26 +32,30 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
+      // Altera para o IP/local correto do teu backend
       const response = await axios.post('http://192.168.1.84:5000/api/users/login', {
         email,
         password,
       });
 
-      // Debug log para ver a resposta do backend
       console.log('RESPOSTA BACKEND:', response.data);
 
       const { token, user } = response.data;
 
       if (!token) {
         setError('Login inválido. Verifica as credenciais.');
+        setLoading(false);
         return;
       }
 
-      // Faz login (normalmente já guarda o token no AsyncStorage!)
-      await login(token, user);
+      // Guarda o token JWT
+      await AsyncStorage.setItem('authToken', token);
 
-      // Redireciona para a home page correta
-      router.replace('/home'); // ou '/community' se preferires
+      // (Opcional) Guarda dados do user, se quiseres usar depois
+      await AsyncStorage.setItem('userData', JSON.stringify(user));
+
+      // Redireciona para a Home (ou outro screen)
+      router.replace('/home');
 
     } catch (error: any) {
       console.error('Erro no login:', error?.response?.data || error);

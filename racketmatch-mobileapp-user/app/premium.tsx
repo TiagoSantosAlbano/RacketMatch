@@ -4,11 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Button, Card, Paragraph } from 'react-native-paper';
 import BackButton from '../components/BackButton';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// Usa Entypo para PayPal!
+import Entypo from 'react-native-vector-icons/Entypo';
 
-// Coloca aqui o link do teu PayPal, se mudares!
+// Link do teu PayPal
 const PAYPAL_LINK = "https://www.paypal.com/ncp/payment/6SXUMFZE22QRE";
-// IP público do backend
 const API_URL = 'http://31.97.177.93:5000';
 
 export default function PremiumScreen() {
@@ -32,7 +32,6 @@ export default function PremiumScreen() {
     checkStatus();
   }, []);
 
-  // Não ativa premium automático. Só mostra instrução.
   const handlePaypal = () => {
     Linking.openURL(PAYPAL_LINK);
     Alert.alert(
@@ -65,7 +64,7 @@ export default function PremiumScreen() {
             <>
               <Button
                 mode="contained"
-                icon={() => <Icon name="paypal" size={24} color="#003087" />}
+                icon={() => <Entypo name="paypal" size={24} color="#003087" />}
                 onPress={handlePaypal}
                 style={styles.button}
                 labelStyle={{ color: '#003087', fontWeight: 'bold', fontSize: 18 }}

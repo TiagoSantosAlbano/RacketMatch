@@ -20,7 +20,6 @@ interface Booking {
     location: string;
   };
   date: string;
-  time?: string;
   status?: string;
 }
 
@@ -108,7 +107,6 @@ export default function BookingsListScreen() {
               <Text style={styles.courtLocation}>{booking.court.location}</Text>
               <Text style={styles.date}>
                 📅 {new Date(booking.date).toLocaleString()}
-                {booking.time ? ` às ${booking.time}` : ''}
               </Text>
               {booking.status && (
                 <Text style={[styles.status, booking.status === 'cancelada' && styles.statusCanceled]}>

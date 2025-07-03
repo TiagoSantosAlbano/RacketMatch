@@ -6,6 +6,7 @@ import {
   Alert,
   ActivityIndicator,
   View,
+  Platform,
 } from 'react-native';
 import { Button, Card, Paragraph } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -26,7 +27,6 @@ export default function BookCourtScreen() {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Carregar courts ao montar o componente
   const fetchCourts = async () => {
     try {
       const res = await axios.get('http://192.168.1.84:5000/api/courts');
@@ -44,7 +44,7 @@ export default function BookCourtScreen() {
     }
 
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem('authToken');
       if (!token) {
         Alert.alert('Erro', 'Token de autenticação não encontrado. Faça login novamente.');
         return;
@@ -55,7 +55,6 @@ export default function BookCourtScreen() {
         {
           court: selectedCourt,
           date: date.toISOString(),
-          time: date.toTimeString().slice(0, 5), // Exemplo para guardar a hora separada
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -75,6 +74,51 @@ export default function BookCourtScreen() {
     fetchCourts();
   }, []);
 
+  function renderDateTimePicker() {
+    if (Platform.OS === 'web') {
+      return (
+        <input
+          type="datetime-local"
+          style={{
+            width: '100%',
+            padding: 10,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: '#2e7d32',
+            marginBottom: 20,
+            fontSize: 16,
+          }}
+          value={date.toISOString().slice(0, 16)}
+          min={new Date().toISOString().slice(0, 16)}
+          onChange={e => setDate(new Date(e.target.value))}
+        />
+      );
+    }
+    return (
+      <>
+        <Button
+          onPress={() => setShowDatePicker(true)}
+          mode="outlined"
+          style={styles.dateButton}
+        >
+          {date.toLocaleString()}
+        </Button>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="datetime"
+            display="default"
+            minimumDate={new Date()}
+            onChange={(_, selectedDate?: Date) => {
+              setShowDatePicker(false);
+              if (selectedDate) setDate(selectedDate);
+            }}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <BackButton />
@@ -85,7 +129,6 @@ export default function BookCourtScreen() {
       ) : (
         <>
           <Text style={styles.subtitle}>Selecione uma quadra:</Text>
-
           {courts.length === 0 ? (
             <Text style={styles.noCourtsText}>Nenhuma quadra disponível no momento.</Text>
           ) : (
@@ -109,26 +152,7 @@ export default function BookCourtScreen() {
           <View style={styles.separator} />
 
           <Text style={styles.subtitle}>Escolha a data e hora:</Text>
-          <Button
-            onPress={() => setShowDatePicker(true)}
-            mode="outlined"
-            style={styles.dateButton}
-          >
-            {date.toLocaleString()}
-          </Button>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="datetime"
-              display="default"
-              minimumDate={new Date()}
-              onChange={(_, selectedDate?: Date) => {
-                setShowDatePicker(false);
-                if (selectedDate) setDate(selectedDate);
-              }}
-            />
-          )}
+          {renderDateTimePicker()}
 
           <Button
             mode="contained"
@@ -204,4 +228,3 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 });
-

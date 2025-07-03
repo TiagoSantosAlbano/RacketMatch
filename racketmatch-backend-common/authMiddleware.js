@@ -1,10 +1,14 @@
 const jwt = require('jsonwebtoken');
-const User = require('./models/User');
+const User = require('../models/User');
 require('dotenv').config();
 
+/**
+ * Middleware para autenticação via JWT.
+ * Espera header: Authorization: Bearer <token>
+ */
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Espera "Bearer <token>"
+  const token = authHeader && authHeader.split(' ')[1]; // Exige "Bearer <token>"
 
   if (!token) {
     console.warn('🚫 Token não fornecido na requisição.');
@@ -12,19 +16,30 @@ const authenticateToken = async (req, res, next) => {
   }
 
   try {
+    // Valida e decodifica o token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    // decoded.id é obrigatório! (Vê como está o sign no login)
+    if (!decoded.id) {
+      console.warn('❌ Token decodificado mas sem id de usuário.');
+      return res.status(401).json({ message: 'Token inválido (sem id de usuário).' });
+    }
+
+    // Procura o usuário
     const user = await User.findById(decoded.id);
     if (!user) {
       console.warn('❌ Token válido, mas usuário não encontrado.');
       return res.status(401).json({ message: 'Usuário não encontrado.' });
     }
 
-    // Atualiza a última atividade
+    // Atualiza última atividade do usuário (opcional)
     user.lastSeen = new Date();
     await user.save();
 
-    req.user = user; // Injeta o usuário no request
+    // Injeta user e userId no req para os controladores
+    req.user = user;
+    req.userId = user._id.toString(); // <<--- Isto é útil para rotas que usam req.userId!
+
     next();
   } catch (error) {
     console.error('❌ Erro ao verificar o token:', error.message);

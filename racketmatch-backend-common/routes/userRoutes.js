@@ -2,21 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware'); // Certifica-te do path!
 
-// Middleware para autenticar JWT
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: 'Token em falta.' });
-  const token = authHeader.replace('Bearer ', '');
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
-    next();
-  } catch {
-    return res.status(401).json({ message: 'Token inválido.' });
-  }
-};
+const router = express.Router();
 
 console.log('✅ userRoutes carregado e pronto a receber requisições.');
 
@@ -25,7 +13,7 @@ router.get('/ping', (req, res) => {
   res.send('✅ Rota GET /ping ativa');
 });
 
-// Criar novo utilizador
+// Criar novo utilizador (register)
 router.post('/register', async (req, res) => {
   try {
     const {
@@ -97,8 +85,9 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Credenciais inválidas.' });
 
+    // TOKEN COM CAMPO id (NÃO userId)!
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { id: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -127,7 +116,7 @@ router.post('/login', async (req, res) => {
 // GET dados do utilizador autenticado
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.userId);
+    const user = req.user; // Já está disponível via middleware!
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
     res.json({
       _id: user._id,
@@ -254,5 +243,3 @@ router.post('/:id/activate-premium', async (req, res) => {
 });
 
 module.exports = router;
-
-console.log('Rotas carregadas:', router.stack.map(layer => layer.route ? layer.route.path : layer.name));
