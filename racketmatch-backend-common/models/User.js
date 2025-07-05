@@ -18,8 +18,6 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-// Index para queries de geolocalização (MongoDB 2dsphere)
 userSchema.index({ location: '2dsphere' });
 
-// Exportar o modelo
 module.exports = mongoose.model('User', userSchema);

@@ -2,22 +2,14 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
-// Importação do middleware
 const authMiddleware = require('../middleware/authMiddleware');
-
-console.log('✅ authMiddleware carregado:', typeof authMiddleware);
 
 const router = express.Router();
 
-console.log('✅ userRoutes carregado e pronto a receber requisições.');
-
-// Rota de teste
 router.get('/ping', (req, res) => {
   res.send('✅ Rota GET /ping ativa');
 });
 
-// Criar novo utilizador (register)
 router.post('/register', async (req, res) => {
   try {
     const {
@@ -75,7 +67,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// LOGIN
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,7 +80,6 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Credenciais inválidas.' });
 
-    // TOKEN COM CAMPO id (NÃO userId)!
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
@@ -117,13 +107,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST dados do utilizador autenticado
 router.get('/me', async (req, res) => {
   try {
-    // Busca SEM autenticação (demo): usa sempre o primeiro user na BD!
     const user = await User.findOne();
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
-    
+
     res.json({
       _id: user._id,
       name: user.name,
@@ -142,10 +130,9 @@ router.get('/me', async (req, res) => {
   }
 });
 
-// GET user por ID (apenas o próprio)
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
-    if (req.userId !== req.params.id) {
+    if (!req.user || String(req.user._id) !== String(req.params.id)) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
     const user = await User.findById(req.params.id);
@@ -168,10 +155,9 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// PUT editar perfil (apenas o próprio)
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    if (req.userId !== req.params.id) {
+    if (!req.user || String(req.user._id) !== String(req.params.id)) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
     const { name, skill_level, preferredLocations, preferredTimes } = req.body;
@@ -200,8 +186,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
     );
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
 
-    console.log('✅ Utilizador atualizado:', user);
-
     res.json({
       _id: user._id,
       name: user.name,
@@ -220,10 +204,9 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE utilizador (apenas o próprio)
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    if (req.userId !== req.params.id) {
+    if (!req.user || String(req.user._id) !== String(req.params.id)) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
     await User.findByIdAndDelete(req.params.id);
@@ -234,7 +217,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// Ativar Premium manualmente (admin manual)
 router.post('/:id/activate-premium', async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -252,5 +234,4 @@ router.post('/:id/activate-premium', async (req, res) => {
   }
 });
 
-// *** NÃO ALTERAR! ***
 module.exports = router;

@@ -11,14 +11,12 @@ import {
 import { useAuth } from '../context/AuthContext';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../config/api';
 
 export default function ProfileScreen() {
-  const { user, logout, login, loading } = useAuth();
+  const { user, logout, login, loading, token } = useAuth();
   const [editMode, setEditMode] = useState(false);
 
-  // Estado local apenas para edição temporária
   const [name, setName] = useState(user?.name || '');
   const [skill, setSkill] = useState(user?.skill_level?.toString() || '');
   const [locations, setLocations] = useState(
@@ -44,13 +42,11 @@ export default function ProfileScreen() {
     );
   }
 
-  // Se não houver utilizador, redireciona para login (sempre via contexto!)
   if (!user) {
-    setTimeout(() => router.replace('/login'), 100); // evitar update on render
+    setTimeout(() => router.replace('/login'), 100);
     return null;
   }
 
-  // Helpers para mostrar arrays bonitinhos
   const renderLocations = () =>
     Array.isArray(user.preferredLocations)
       ? user.preferredLocations.join(', ')
@@ -60,18 +56,15 @@ export default function ProfileScreen() {
       ? user.preferredTimes.join(', ')
       : (user.preferredTimes || '');
 
-  // Atualizar perfil: faz PUT e atualiza contexto!
   const handleSave = async () => {
     if (!user) return;
+    if (!token) {
+      Alert.alert('Erro', 'Token JWT não encontrado! Faz login novamente.');
+      setSaving(false);
+      return;
+    }
     setSaving(true);
     try {
-      const token = await AsyncStorage.getItem('authToken');
-      if (!token) {
-        Alert.alert('Erro', 'Sessão expirada. Faz login novamente.');
-        await logout();
-        router.replace('/login');
-        return;
-      }
       const payload = {
         name,
         skill_level: Number(skill),
@@ -79,10 +72,13 @@ export default function ProfileScreen() {
         preferredTimes: times.split(',').map(t => t.trim()).filter(Boolean),
       };
       const response = await api.put(`/users/${user._id}`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
       });
-      // Atualiza o contexto com o novo user
-      await login(token, response.data);
+
+      const updatedUser = response.data.user || response.data;
+      await login(token, updatedUser);
       setEditMode(false);
       Alert.alert('Sucesso', 'Dados atualizados!');
     } catch (error) {
@@ -92,9 +88,12 @@ export default function ProfileScreen() {
     }
   };
 
-  // Eliminar user: faz DELETE, depois faz logout (no contexto)
   const handleDelete = async () => {
     if (!user) return;
+    if (!token) {
+      Alert.alert('Erro', 'Token JWT não encontrado! Faz login novamente.');
+      return;
+    }
     Alert.alert(
       'Eliminar conta',
       'Tens a certeza? Esta ação é irreversível.',
@@ -106,13 +105,6 @@ export default function ProfileScreen() {
           onPress: async () => {
             setDeleting(true);
             try {
-              const token = await AsyncStorage.getItem('authToken');
-              if (!token) {
-                Alert.alert('Erro', 'Sessão expirada. Faz login novamente.');
-                await logout();
-                router.replace('/login');
-                return;
-              }
               await api.delete(`/users/${user._id}`, {
                 headers: { Authorization: `Bearer ${token}` }
               });
@@ -136,7 +128,6 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Botão voltar */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/home')}>
         <Icon name="arrow-left" size={26} color="#00c4b4" />
       </TouchableOpacity>
@@ -308,4 +299,3 @@ const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   title: { fontSize: 22, color: '#222', fontWeight: 'bold' },
 });
-

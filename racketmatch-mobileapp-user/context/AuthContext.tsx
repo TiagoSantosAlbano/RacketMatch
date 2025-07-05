@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Interface User com todos os campos do backend!
 export interface User {
   _id: string;
   name: string;
@@ -13,7 +12,6 @@ export interface User {
   tenantId: string;
   premiumSince?: string;
   lastSeen?: string;
-  // Adiciona mais campos se precisares!
 }
 
 interface AuthContextType {
@@ -38,12 +36,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const storedUser = await AsyncStorage.getItem('user');
         if (storedToken && storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          const userData: User = {
+          setToken(storedToken);
+          setUser({
             ...parsedUser,
             _id: parsedUser._id || parsedUser.id,
-          };
-          setToken(storedToken);
-          setUser(userData);
+          });
         }
       } catch (err) {
         console.error('Erro ao restaurar sessão:', err);
@@ -51,19 +48,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
       }
     };
-
     loadSession();
   }, []);
 
   const login = async (token: string, user: User) => {
-    const userData: User = {
-      ...user,
-      _id: user._id || (user as any).id,
-    };
     setToken(token);
-    setUser(userData);
+    setUser({ ...user, _id: user._id || (user as any).id });
     await AsyncStorage.setItem('authToken', token);
-    await AsyncStorage.setItem('user', JSON.stringify(userData));
+    await AsyncStorage.setItem('user', JSON.stringify({ ...user, _id: user._id || (user as any).id }));
   };
 
   const logout = async () => {
