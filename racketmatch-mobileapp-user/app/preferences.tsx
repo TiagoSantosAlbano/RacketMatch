@@ -32,7 +32,7 @@ export default function PreferencesScreen() {
       setLoading(true);
 
       await axios.put(
-        'http://31.97.177.93:5000/api/preferences',
+        'http://localhost:5000/api/preferences',
         {
           dominant_hand: dominantHand,
           preferred_side: preferredSide,

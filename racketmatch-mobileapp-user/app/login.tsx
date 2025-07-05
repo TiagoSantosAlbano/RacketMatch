@@ -11,10 +11,11 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../context/AuthContext'; // Caminho certo!
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login, loading: loadingAuth } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,36 +28,29 @@ export default function LoginScreen() {
       setError('Preenche todos os campos.');
       return;
     }
-
     setError(null);
     setLoading(true);
 
     try {
-      // Altera para o IP/local correto do teu backend
-      const response = await axios.post('http://31.97.177.93:5000/api/users/login', {
+      const response = await axios.post('http://localhost:5000/api/users/login', {
         email,
         password,
       });
-
       console.log('RESPOSTA BACKEND:', response.data);
 
       const { token, user } = response.data;
 
-      if (!token) {
+      if (!token || !user) {
         setError('Login inválido. Verifica as credenciais.');
         setLoading(false);
         return;
       }
 
-      // Guarda o token JWT
-      await AsyncStorage.setItem('authToken', token);
+      // Usa SEMPRE o contexto de auth
+      await login(token, user);
 
-      // (Opcional) Guarda dados do user, se quiseres usar depois
-      await AsyncStorage.setItem('userData', JSON.stringify(user));
-
-      // Redireciona para a Home (ou outro screen)
+      // Redireciona para Home
       router.replace('/home');
-
     } catch (error: any) {
       console.error('Erro no login:', error?.response?.data || error);
       setError(error?.response?.data?.message || 'Falha no login.');
@@ -86,7 +80,7 @@ export default function LoginScreen() {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
-          editable={!loading}
+          editable={!loading && !loadingAuth}
         />
 
         <TextInput
@@ -97,13 +91,13 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           autoCapitalize="none"
-          editable={!loading}
+          editable={!loading && !loadingAuth}
         />
 
         <TouchableOpacity
           style={styles.togglePassword}
           onPress={() => setShowPassword(!showPassword)}
-          disabled={loading}
+          disabled={loading || loadingAuth}
         >
           <Text style={styles.togglePasswordText}>
             {showPassword ? '🙈 Esconder' : '👁️ Mostrar'}
@@ -113,9 +107,9 @@ export default function LoginScreen() {
         <TouchableOpacity
           style={styles.button}
           onPress={handleLogin}
-          disabled={loading}
+          disabled={loading || loadingAuth}
         >
-          {loading ? (
+          {loading || loadingAuth ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.buttonText}>🔓 Entrar</Text>
@@ -124,7 +118,7 @@ export default function LoginScreen() {
 
         <TouchableOpacity
           onPress={() => router.push('/register')}
-          disabled={loading}
+          disabled={loading || loadingAuth}
         >
           <Text style={styles.registerText}>
             Não tens conta? <Text style={styles.registerLink}>Regista-te</Text>
@@ -178,7 +172,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
     fontSize: 15,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   togglePassword: {
     alignSelf: 'flex-end',

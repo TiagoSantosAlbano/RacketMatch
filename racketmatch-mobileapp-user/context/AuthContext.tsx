@@ -38,7 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const storedUser = await AsyncStorage.getItem('user');
         if (storedToken && storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          // Normaliza sempre o _id
           const userData: User = {
             ...parsedUser,
             _id: parsedUser._id || parsedUser.id,
@@ -57,7 +56,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (token: string, user: User) => {
-    // Garante que o user tem _id
     const userData: User = {
       ...user,
       _id: user._id || (user as any).id,

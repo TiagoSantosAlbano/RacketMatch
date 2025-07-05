@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { Card, Paragraph, Button, Text, Badge } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../context/AuthContext'; // AJUSTA O CAMINHO se necessário
 
 const HomeScreen = () => {
   const router = useRouter();
-  const [userName, setUserName] = useState<string | null>('');
-  const [isPremium, setIsPremium] = useState<boolean>(false);
+  const { user, loading } = useAuth();
+
+  const isPremium = !!user?.isPremium;
+  const userName = user?.name || 'User';
 
   const routes = {
     premium: '/premium' as const,
@@ -23,44 +24,28 @@ const HomeScreen = () => {
     club: (slug: string) => `/club/${slug}` as const,
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const storedUser = await AsyncStorage.getItem('user');
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          setUserName(userData.name || 'User');
-          setIsPremium(userData.isPremium || false);
-          return;
-        }
+  // Mostra loading enquanto o contexto está a carregar
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#00c4b4" />
+        <Text style={{ marginTop: 10 }}>Carregando...</Text>
+      </View>
+    );
+  }
 
-        const token = await AsyncStorage.getItem('authToken');
-        if (token) {
-          const response = await axios.get('http://31.97.177.93:5000/api/user', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const userData = response.data;
-          setUserName(userData.name || 'User');
-          setIsPremium(userData.isPremium || false);
-          await AsyncStorage.setItem('user', JSON.stringify(userData));
-        } else {
-          setUserName('User');
-        }
-      } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
-        setUserName('User');
-      }
-    };
-
-    fetchUserData();
-  }, []);
+  // Se não houver utilizador autenticado, redireciona
+  if (!user) {
+    setTimeout(() => router.replace('/login'), 100);
+    return null;
+  }
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.nameRow}>
           <Text style={[styles.greeting, isPremium && styles.premiumName]}>
-            Olá, {userName || 'User'} 👋
+            Olá, {userName} 👋
           </Text>
           {isPremium && <Icon name="crown" size={20} color="#FFD700" style={{ marginLeft: 8 }} />}
         </View>
@@ -163,6 +148,7 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   container: { flex: 1, backgroundColor: '#e8f5e9' },
   header: { backgroundColor: '#1A2B3C', padding: 15, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
   nameRow: { flexDirection: 'row', alignItems: 'center' },

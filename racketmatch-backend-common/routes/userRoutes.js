@@ -117,11 +117,11 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET dados do utilizador autenticado
-router.get('/me', authMiddleware, async (req, res) => {
+// POST dados do utilizador autenticado
+router.get('/me', async (req, res) => {
   try {
-    // Buscar o utilizador pela ID do token
-    const user = await User.findById(req.userId);
+    // Busca SEM autenticação (demo): usa sempre o primeiro user na BD!
+    const user = await User.findOne();
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
     
     res.json({

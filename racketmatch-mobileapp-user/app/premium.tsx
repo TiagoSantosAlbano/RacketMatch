@@ -4,12 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Button, Card, Paragraph } from 'react-native-paper';
 import BackButton from '../components/BackButton';
-// Usa Entypo para PayPal!
 import Entypo from 'react-native-vector-icons/Entypo';
 
-// Link do teu PayPal
 const PAYPAL_LINK = "https://www.paypal.com/ncp/payment/6SXUMFZE22QRE";
-const API_URL = 'http://31.97.177.93:5000';
+const API_URL = 'http://localhost:5000';
 
 export default function PremiumScreen() {
   const [isPremium, setIsPremium] = useState(false);
@@ -19,12 +17,17 @@ export default function PremiumScreen() {
     const checkStatus = async () => {
       try {
         const token = await AsyncStorage.getItem('authToken');
-        const res = await axios.get(`${API_URL}/api/users/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setIsPremium(res.data.isPremium);
+        if (token) {
+          const res = await axios.get(`${API_URL}/api/users/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setIsPremium(res.data.isPremium);
+        } else {
+          setIsPremium(false);
+        }
       } catch (error) {
         console.error('Erro ao buscar dados do usuário:', error);
+        setIsPremium(false);
       } finally {
         setLoading(false);
       }
@@ -93,3 +96,4 @@ const styles = StyleSheet.create({
   success: { marginTop: 20, textAlign: 'center', fontWeight: 'bold', color: '#2e7d32' },
   info: { marginTop: 16, fontSize: 15, color: '#555', textAlign: 'center' },
 });
+

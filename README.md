@@ -1,138 +1,28 @@
-# 🎾 RacketMatch
+O ficheiro não vem com os models, fazer no terminal do vscode
 
-Aplicação completa para marcar e gerir partidas de Ténis/Padel entre jogadores.
-
-Projeto final de curso com três frentes principais:
-
-- Frontend mobile feito em React Native com Expo
-- Backend (API) em Node.js
-- Painel administrativo web com React e TypeScript
-
----
-
-## 📚 Sumário
-
-- Estrutura
-- Tecnologias
-- Instalação Local
-- Demonstração
-- Autor
-- Licença
-
----
-
-## 📁 Estrutura do Projeto
-
-O repositório está dividido em três principais diretórios, cada um responsável por uma parte da aplicação:
-
-- **backend/**  
-  Contém a API REST desenvolvida em Node.js com Express. Responsável por autenticação, regras de negócio e integração com banco de dados (MongoDB).
-
-- **frontend/**  
-  Aplicação mobile criada com React Native e Expo. Interface voltada para os jogadores, com funcionalidades como marcação de partidas e visualização de histórico.
-
-- **racketmatch-admin/**  
-  Painel administrativo web desenvolvido com React e TypeScript. Permite o gerenciamento de usuários, partidas e estatísticas da plataforma.
-
-Outros arquivos e pastas incluem:
-
-- **README.md** — documentação geral do projeto  
-- **.gitignore** — define arquivos ignorados pelo Git  
-- **package.json** — configurações e dependências do projeto
-
-
-## 🚀 Tecnologias Utilizadas
-
-**Frontend (Mobile)**  
-- React Native  
-- Expo  
-- React Navigation  
-- Styled Components  
-- Axios  
-
-**Backend (API)**  
-- Node.js  
-- Express  
-- MongoDB  
-- Mongoose  
-- JWT (autenticação)  
-- Bcrypt (criptografia de senhas)
-
-**Painel Administrativo**  
-- React  
-- Vite  
-- TypeScript  
-- Tailwind CSS  
-- Axios  
-
----
-
-## ⚙️ Instalação Local
-
-### 1. Clonar o repositório
-
-Abra o terminal e digite:
-
-git clone https://github.com/TiagoSantosAlbano/RacketMatch.git
-cd RacketMatch
-
-shell
-Copiar
-Editar
-
-### 2. Instalar dependências
-
-#### Backend
-
-cd backend
 npm install
-npm run dev
 
-shell
-Copiar
-Editar
+ também não vem com o .env do backend, carregar com o botão do lado direito do rato em cima do racketmatch backend common e depois em criar novo ficheiro e nomealo de .env e em seguida colar o seguinte codigo:
 
-#### Frontend
+MONGODB_URI=mongodb+srv://racketmachtadmin:mysecretkey123@racketmatch.v68gr.mongodb.net/
+JWT_SECRET=mysecretkey123
+PORT=5000
 
-cd frontend
-npm install
-npx expo start
+EMAIL_FROM=racketmatch@gmail.com
+EMAIL_PASS=RacketMatch-282
 
-shell
-Copiar
-Editar
+VITE_API_URL=http://31.97.177.93:5000
+EXPO_PUBLIC_API_URL=http://31.97.177.93:5000/api
 
-#### Painel Administrativo
+# PayPal sandbox credentials
+PAYPAL_CLIENT_ID=AS8MFnQdkUb3rbF9ADnBXfpaYBWspGHLj7-XG2lKXBhELeECNzPjZqT6W17pTXohvunUyuoU21DETFZt
+PAYPAL_CLIENT_SECRET=EEv7wwzc4BTHyqxWjBJ0SLTZsFu4V6_i6loeWC0NTy_jze0HYkhFri4akRIUFu6D61IuysL2xhEGovCG9
 
-cd racketmatch-admin
-npm install
-npm run dev
+PAYPAL_RETURN_URL=http://31.97.177.93:5000/api/paypal/capture-payment
+PAYPAL_CANCEL_URL=http://31.97.177.93:5000/paypal-cancel
 
-yaml
-Copiar
-Editar
 
----
 
-## 📸 Demonstração
-
-- Tela de login e registro (Mobile)
-- Listagem e agendamento de partidas (Mobile)
-- Dashboard com estatísticas (Admin)
-- Gerenciamento de usuários e jogos (Admin)
-
----
-
-## 👤 Autor
-
-Nome: Tiago Santos Albano  
-Projeto desenvolvido como parte do curso PAP (Projeto de Aptidão Profissional).
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.  
-Você pode usar, modificar e distribuir livremente com os devidos créditos.
-
----
+A Base de dados é acedida através da tarefeé o link do mongodb atlas
+ o email de acesso é tiago.macieira.albano.epic@gmail.com
+ e a palavra passe está nas tarefas

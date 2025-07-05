@@ -14,7 +14,7 @@ export default function AdminLogin() {
 
   const handleLogin = async () => {
     try {
-      await axios.post('http://31.97.177.93:5000/api/admin-auth/login', { email, password });
+      await axios.post('http://localhost:5000/api/admin-auth/login', { email, password });
       Alert.alert('Código enviado!', 'Verifica o teu email para o código 2FA.');
       setStep('verify');
     } catch (err: any) {
@@ -25,7 +25,7 @@ export default function AdminLogin() {
 
   const handleVerify = async () => {
     try {
-      const res = await axios.post('http://31.97.177.93:5000/api/admin-auth/verify-2fa', { email, code });
+      const res = await axios.post('http://localhost:5000/api/admin-auth/verify-2fa', { email, code });
       const token = res.data.token;
 
       // ✅ Guarda o token no AsyncStorage

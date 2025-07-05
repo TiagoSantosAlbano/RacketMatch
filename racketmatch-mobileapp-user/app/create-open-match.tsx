@@ -32,7 +32,7 @@ export default function CreateOpenMatchScreen() {
       const token = await AsyncStorage.getItem('authToken');
 
       await axios.post(
-        'http://31.97.177.93:5000/api/matches',
+        'http://localhost:5000/api/matches',
         {
           match_date: matchDate,
           match_time: matchTime,
