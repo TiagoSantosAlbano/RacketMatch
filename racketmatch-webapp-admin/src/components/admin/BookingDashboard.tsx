@@ -19,7 +19,7 @@ const BookingDashboard = () => {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/admin/bookings");
+      const res = await fetch("http://31.97.177.93:5000/api/admin/bookings");
       const data = await res.json();
       setBookings(data);
     } catch (err) {
@@ -32,7 +32,7 @@ const BookingDashboard = () => {
   const handleDelete = async (id: string) => {
     if (!confirm("Tens a certeza que queres eliminar esta reserva?")) return;
     try {
-      await fetch(`http://localhost:5000/api/admin/bookings/${id}`, {
+      await fetch(`http://31.97.177.93:5000/api/admin/bookings/${id}`, {
         method: "DELETE",
       });
       setBookings((prev) => prev.filter((b) => b._id !== id));

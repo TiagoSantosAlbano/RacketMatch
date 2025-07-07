@@ -15,7 +15,7 @@ export default function CreateCourtPage() {
 
     try {
       await axios.post(
-        'http://localhost:5000/api/admin/courts',
+        'http://31.97.177.93:5000/api/admin/courts',
         { name, location },
         {
           headers: { Authorization: `Bearer ${token}` },

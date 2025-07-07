@@ -7,7 +7,7 @@ export default function AdminUsers() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const res = await axios.get('http://localhost:5000/api/admin/users', {
+      const res = await axios.get('http://31.97.177.93:5000/api/admin/users', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data);
@@ -21,7 +21,7 @@ export default function AdminUsers() {
 
     try {
       const token = localStorage.getItem('adminToken');
-      await axios.delete(`http://localhost:5000/api/admin/users/${id}`, {
+      await axios.delete(`http://31.97.177.93:5000/api/admin/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(users.filter((user: any) => user._id !== id));

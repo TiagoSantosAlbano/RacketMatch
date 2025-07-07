@@ -11,7 +11,7 @@ export default function CourtListPage() {
   const fetchCourts = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const res = await axios.get('http://localhost:5000/api/admin/courts', {
+      const res = await axios.get('http://31.97.177.93:5000/api/admin/courts', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCourts(res.data);
@@ -28,7 +28,7 @@ export default function CourtListPage() {
 
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/admin/courts/${id}`, {
+      await axios.delete(`http://31.97.177.93:5000/api/admin/courts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage('✅ campo removida com sucesso!');

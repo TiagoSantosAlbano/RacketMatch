@@ -14,21 +14,18 @@ console.log('Porta configurada:', process.env.PORT);
 
 connectDB();
 
+
 app.use(cors({
-  origin: [
-    'http://localhost:8081',
-    'http://31.97.177.93:8081',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-  ],
+  origin: '*', 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+  credentials: false 
 }));
-app.use(express.json());
 
+app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
+// --- Rotas ---
 const courtRoutes = require('./routes/courtRoutes');
 const matchRoutes = require('./routes/matchRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -39,13 +36,10 @@ const paypalRoutes = require('./routes/paypalRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const adminRoutes = require('./routes/adminAuth');
-
-
 const adminUserRoutes = require('./routes/adminUserRoutes');
 const adminMatchRoutes = require('./routes/adminMatchRoutes');
 const adminBookingRoutes = require('./routes/adminBookingRoutes');
 const adminCourtRoutes = require('./routes/adminCourtRoutes');
-
 
 app.use('/api/admin-auth', adminRoutes);
 
@@ -75,11 +69,11 @@ app.get('/paypal-cancel', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const PUBLIC_IP = process.env.PUBLIC_IP || 'localhost';
+const PUBLIC_IP = '31.97.177.93'; 
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend ativo em:`);
   console.log(`   • http://localhost:${PORT}`);
-  console.log(`   • http://<teu-ip-local>:${PORT} 📱`);
-  console.log(`   • http://${PUBLIC_IP}:${PORT} 🌍`);
+  console.log(`   • http://127.0.0.1:${PORT}`);
+  console.log(`   • http://${PUBLIC_IP}:${PORT} 🌍 `);
 });

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 
-const API_URL = "http://localhost:5000/api/tenants";
+const API_URL = "http://31.97.177.93:5000/api/tenants";
 
 export interface Tenant {
   _id: string;

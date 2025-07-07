@@ -12,7 +12,7 @@ const VerifyCode = () => {
 
   const handleVerify = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/admin/verify-code', {
+      const res = await axios.post('http://31.97.177.93:5000/api/admin/verify-code', {
         email,
         code,
       });

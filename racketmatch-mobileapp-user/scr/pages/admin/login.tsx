@@ -15,7 +15,7 @@ export default function AdminLogin() {
     setLoading(true);
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/admin/login', { email, password });
+      await axios.post('http://31.97.177.93:5000/api/admin/login', { email, password });
 
       
       router.push('../verify-code');

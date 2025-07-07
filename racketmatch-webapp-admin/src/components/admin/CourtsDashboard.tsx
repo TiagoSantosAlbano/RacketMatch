@@ -15,7 +15,7 @@ const CourtsDashboard: React.FC = () => {
 
   const fetchCourts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/courts");
+      const res = await fetch("http://31.97.177.93:5000/api/admin/courts");
       const data = await res.json();
       setCourts(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -26,7 +26,7 @@ const CourtsDashboard: React.FC = () => {
 
   const handleCreateCourt = async (newCourt: Partial<Court>) => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/courts", {
+      const res = await fetch("http://31.97.177.93:5000/api/admin/courts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCourt),
@@ -50,7 +50,7 @@ const CourtsDashboard: React.FC = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/courts/${editingCourt._id}`,
+        `http://31.97.177.93:5000/api/admin/courts/${editingCourt._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -80,7 +80,7 @@ const CourtsDashboard: React.FC = () => {
     if (!window.confirm("Tens a certeza que queres eliminar este court?")) return;
     try {
       const res = await fetch(
-        `http://localhost:5000/api/admin/courts/${id}`,
+        `http://31.97.177.93:5000/api/admin/courts/${id}`,
         { method: "DELETE" }
       );
       if (res.ok) {

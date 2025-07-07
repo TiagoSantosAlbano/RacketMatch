@@ -16,7 +16,7 @@ export default function EditCourtPage() {
     try {
       const token = localStorage.getItem('adminToken');
       const { data } = await axios.get(
-        `http://localhost:5000/api/admin/courts/${id}`,
+        `http://31.97.177.93:5000/api/admin/courts/${id}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       setName(data.name);
@@ -34,7 +34,7 @@ export default function EditCourtPage() {
     try {
       const token = localStorage.getItem('adminToken');
       await axios.put(
-        `http://localhost:5000/api/admin/courts/${id}`,
+        `http://31.97.177.93:5000/api/admin/courts/${id}`,
         { name, location },
         { headers: { Authorization: `Bearer ${token}` } },
       );

@@ -20,7 +20,7 @@ const MatchesDashboard = () => {
   const fetchMatches = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/admin/matches");
+      const res = await fetch("http://31.97.177.93:5000/api/admin/matches");
       const data = await res.json();
       setMatches(data);
     } catch (err) {
@@ -33,7 +33,7 @@ const MatchesDashboard = () => {
   const handleDelete = async (id: string) => {
     if (!confirm("Tens a certeza que queres eliminar esta partida?")) return;
     try {
-      await fetch(`http://localhost:5000/api/admin/matches/${id}`, {
+      await fetch(`http://31.97.177.93:5000/api/admin/matches/${id}`, {
         method: "DELETE",
       });
       setMatches((prev) => prev.filter((m) => m._id !== id));

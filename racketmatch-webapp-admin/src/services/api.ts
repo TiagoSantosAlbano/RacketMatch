@@ -1,7 +1,7 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
 // Defina o endpoint da sua API diretamente aqui
-const BASE_URL = 'http://localhost:5000/api'; // ajuste se mudar o host/porta no backend
+const BASE_URL = 'http://31.97.177.93:5000/api'; // ajuste se mudar o host/porta no backend
 
 const api = axios.create({
   baseURL: BASE_URL,

@@ -135,7 +135,7 @@ export default function CreateOpenMatchScreen() {
       const match_time = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
       await axios.post(
-        'http://localhost:5000/api/matches',
+        'http://31.97.177.93:5000/api/matches',
         {
           match_date,
           match_time,

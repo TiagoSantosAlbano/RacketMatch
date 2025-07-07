@@ -10,7 +10,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      await axios.post('http://localhost:5000/api/admin-auth/login', {
+      await axios.post('http://31.97.177.93:5000/api/admin-auth/login', {
         email,
         password,
       });
@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   const handleVerifyCode = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/admin-auth/verify-2fa', {
+      const res = await axios.post('http://31.97.177.93:5000/api/admin-auth/verify-2fa', {
         email,
         code,
       });
