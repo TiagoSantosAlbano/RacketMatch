@@ -1,18 +1,18 @@
 const Court = require('../models/Court');
 const path = require('path');
 
-// GET all courts
+
 const getAllCourts = async (req, res) => {
   try {
     const courts = await Court.find();
     res.json(courts);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erro ao buscar quadras.' });
+    res.status(500).json({ message: 'Erro ao procurar campos.' });
   }
 };
 
-// POST create court
+
 const createCourt = async (req, res) => {
   try {
     const { name, location, type, price } = req.body;
@@ -32,11 +32,11 @@ const createCourt = async (req, res) => {
     res.status(201).json({ court: savedCourt });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erro ao criar quadra.' });
+    res.status(500).json({ message: 'Erro ao criar campo.' });
   }
 };
 
-// PUT update court
+
 const updateCourt = async (req, res) => {
   try {
     const { name, location, type, price } = req.body;
@@ -53,24 +53,24 @@ const updateCourt = async (req, res) => {
 
     const updated = await Court.findByIdAndUpdate(req.params.id, updateData, { new: true });
     if (!updated) {
-      return res.status(404).json({ message: 'Quadra não encontrada.' });
+      return res.status(404).json({ message: 'campo não encontrada.' });
     }
 
     res.json({ court: updated });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erro ao atualizar quadra.' });
+    res.status(500).json({ message: 'Erro ao atualizar campo.' });
   }
 };
 
-// DELETE court
+
 const deleteCourt = async (req, res) => {
   try {
     await Court.findByIdAndDelete(req.params.id);
     res.status(204).send();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Erro ao excluir quadra.' });
+    res.status(500).json({ message: 'Erro ao excluir campo.' });
   }
 };
 

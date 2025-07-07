@@ -1,17 +1,17 @@
-// App.tsx
+
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/admin/Login';
 import Register from './pages/admin/Register';
 import Dashboard from './pages/admin/Dashboard';
 import { useTheme } from './hooks/useTheme';
-// ✅
+
 
 export default function App() {
-  const { theme } = useTheme(); // ✅
+  const { theme } = useTheme(); 
 
   return (
-    <div className={theme === 'dark' ? 'dark' : ''}> {/* ✅ Aplica classe global */}
+    <div className={theme === 'dark' ? 'dark' : ''}> 
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />

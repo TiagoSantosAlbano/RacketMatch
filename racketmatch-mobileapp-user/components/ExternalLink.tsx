@@ -1,4 +1,4 @@
-// src/components/ExternalLink.tsx
+
 import { openBrowserAsync } from 'expo-web-browser';
 import { type ComponentProps } from 'react';
 import { Platform, Pressable, Text } from 'react-native';

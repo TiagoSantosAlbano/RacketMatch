@@ -4,7 +4,7 @@ const Match = require('../models/Match');
 const User = require('../models/User');
 const authAdmin = require('../middleware/authAdmin');
 
-// 🔍 Ver todas as partidas
+
 router.get('/', authAdmin, async (req, res) => {
   try {
     const matches = await Match.find()
@@ -12,11 +12,11 @@ router.get('/', authAdmin, async (req, res) => {
       .populate('players', 'name email');
     res.json(matches);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar partidas' });
+    res.status(500).json({ error: 'Erro ao procurar partidas' });
   }
 });
 
-// 👥 Ver jogadores de uma partida específica
+
 router.get('/:id/players', authAdmin, async (req, res) => {
   try {
     const match = await Match.findById(req.params.id).populate('players', 'name email');
@@ -24,11 +24,11 @@ router.get('/:id/players', authAdmin, async (req, res) => {
 
     res.json(match.players);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar jogadores' });
+    res.status(500).json({ error: 'Erro ao procurar jogadores' });
   }
 });
 
-// ❌ Remover partida
+
 router.delete('/:id', authAdmin, async (req, res) => {
   try {
     const match = await Match.findByIdAndDelete(req.params.id);
@@ -40,7 +40,7 @@ router.delete('/:id', authAdmin, async (req, res) => {
   }
 });
 
-// ➕ Adicionar admin manualmente como jogador (testes, moderação)
+
 router.post('/:id/join', authAdmin, async (req, res) => {
   try {
     const match = await Match.findById(req.params.id);

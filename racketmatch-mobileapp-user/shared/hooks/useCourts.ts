@@ -5,7 +5,7 @@ interface Court {
   _id: string;
   name: string;
   location: string;
-  // adicione outros campos conforme necessário
+ 
 }
 
 export function useCourts() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './context/authContext';
 import { Slot } from 'expo-router';
 
 export default function App() {

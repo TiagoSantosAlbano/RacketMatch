@@ -4,7 +4,7 @@ import CourtCard from "../courts/CourtCard";
 import CourtModal from "./CourtModal";
 import { Court } from "../../models/court";
 
-const CourtsDashboard = () => {
+const CourtsDashboard: React.FC = () => {
   const [courts, setCourts] = useState<Court[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCourt, setEditingCourt] = useState<Court | null>(null);
@@ -17,9 +17,10 @@ const CourtsDashboard = () => {
     try {
       const res = await fetch("http://localhost:5000/api/admin/courts");
       const data = await res.json();
-      setCourts(data);
+      setCourts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Erro ao carregar courts:", err);
+      setCourts([]);
     }
   };
 
@@ -36,10 +37,11 @@ const CourtsDashboard = () => {
         setCourts((prev) => [...prev, created]);
         setIsModalOpen(false);
       } else {
-        console.error("Erro ao criar court.");
+        alert("Erro ao criar court.");
       }
     } catch (err) {
-      console.error("Erro ao criar court:", err);
+      alert("Erro ao criar court.");
+      console.error(err);
     }
   };
 
@@ -47,44 +49,55 @@ const CourtsDashboard = () => {
     if (!editingCourt?._id) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/courts/${editingCourt._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/admin/courts/${editingCourt._id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updated),
+        }
+      );
 
       if (res.ok) {
         const updatedCourt = await res.json();
         setCourts((prev) =>
-          prev.map((court) => (court._id === updatedCourt._id ? updatedCourt : court))
+          prev.map((court) =>
+            court._id === updatedCourt._id ? updatedCourt : court
+          )
         );
         setIsModalOpen(false);
         setEditingCourt(null);
       } else {
-        console.error("Erro ao atualizar court.");
+        alert("Erro ao atualizar court.");
       }
     } catch (err) {
-      console.error("Erro ao atualizar court:", err);
+      alert("Erro ao atualizar court.");
+      console.error(err);
     }
   };
 
   const handleDeleteCourt = async (id: string) => {
-    const confirmDelete = confirm("Tens a certeza que queres eliminar este court?");
-    if (!confirmDelete) return;
-
+    if (!window.confirm("Tens a certeza que queres eliminar este court?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/courts/${id}`, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(
+        `http://localhost:5000/api/admin/courts/${id}`,
+        { method: "DELETE" }
+      );
       if (res.ok) {
         setCourts((prev) => prev.filter((court) => court._id !== id));
       } else {
-        console.error("Erro ao eliminar court.");
+        alert("Erro ao eliminar court.");
       }
     } catch (err) {
-      console.error("Erro ao eliminar court:", err);
+      alert("Erro ao eliminar court.");
+      console.error(err);
     }
+  };
+
+  // Fecha modal e reseta editingCourt
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingCourt(null);
   };
 
   return (
@@ -93,8 +106,10 @@ const CourtsDashboard = () => {
         <h1 className="text-2xl font-bold">Gestão de Courts</h1>
         <button
           onClick={() => {
-            setEditingCourt(null);
-            setIsModalOpen(true);
+            if (!isModalOpen) {
+              setEditingCourt(null);
+              setIsModalOpen(true);
+            }
           }}
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
         >
@@ -122,10 +137,7 @@ const CourtsDashboard = () => {
 
       {isModalOpen && (
         <CourtModal
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingCourt(null);
-          }}
+          onClose={handleCloseModal}
           onSubmit={editingCourt ? handleUpdateCourt : handleCreateCourt}
           initialData={editingCourt || undefined}
         />

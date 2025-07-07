@@ -1,21 +1,21 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import type { StyleProp, TextStyle } from 'react-native';
 
-type SymbolWeight = 'regular' | 'bold'; // ajuste conforme necessário
+type SymbolWeight = 'regular' | 'bold'; 
 
-// Se você estiver usando um mapeamento customizado de nomes:
+
 const MAPPING: Record<string, keyof typeof MaterialIcons.glyphMap> = {
   home: 'home',
   settings: 'settings',
   account: 'account-circle',
-  // adicione os ícones que você usa aqui
+
 };
 
 type IconSymbolProps = {
   name: keyof typeof MAPPING;
   size?: number;
   color: string;
-  style?: StyleProp<TextStyle>; // Corrigido para aceitar estilos de texto
+  style?: StyleProp<TextStyle>; 
   weight?: SymbolWeight;
 };
 

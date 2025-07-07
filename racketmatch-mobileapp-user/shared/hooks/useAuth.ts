@@ -5,7 +5,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simula autenticação
+
     const fetchUser = async () => {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {

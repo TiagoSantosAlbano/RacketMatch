@@ -17,7 +17,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<StatsType | null>(null);
   const router = useRouter();
 
-  useAdminAuth(); // ✅ Proteção da rota
+  useAdminAuth(); 
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
       <ul style={{ listStyle: 'none', padding: 0 }}>
         <li>👤 Utilizadores: <strong>{stats.users}</strong></li>
         <li>🏆 Premium: <strong>{stats.premiumUsers}</strong></li>
-        <li>🏟️ Quadras: <strong>{stats.courts}</strong></li>
+        <li>🏟️ campos: <strong>{stats.courts}</strong></li>
         <li>📅 Reservas: <strong>{stats.bookings}</strong></li>
         <li>🧑‍🤝‍🧑 Open Matches: <strong>{stats.openMatches}</strong></li>
         <li>🗨️ Posts Comunidade: <strong>{stats.communityPosts}</strong></li>

@@ -10,15 +10,14 @@ module.exports = function (req, res, next) {
   const token = authHeader.split(' ')[1];
 
   try {
-    // ✅ Verifica o token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // ✅ Confirma se é admin
+
     if (decoded.role !== 'admin') {
       return res.status(403).json({ message: '❌ Acesso negado. Apenas administradores podem aceder.' });
     }
 
-    // ✅ Passa o admin para o próximo middleware
+
     req.admin = decoded;
 
     next();

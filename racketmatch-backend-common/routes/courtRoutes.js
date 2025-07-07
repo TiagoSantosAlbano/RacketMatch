@@ -4,7 +4,7 @@ const courtController = require('../controllers/courtController');
 const multer = require('multer');
 const path = require('path');
 
-// Certifica-te que a pasta 'public/uploads/' existe
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/uploads/');
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Rotas das courts
+
 router.get('/', courtController.getAllCourts);
 router.post('/', upload.single('image'), courtController.createCourt);
 router.put('/:id', upload.single('image'), courtController.updateCourt);

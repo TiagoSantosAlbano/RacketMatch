@@ -11,7 +11,7 @@ const {
   deleteCourt,
 } = require('../controllers/courtController');
 
-// Configuração do multer para salvar imagens em 'public/uploads/'
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/uploads/');
@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Rotas protegidas (autenticadas) para admin
+
 router.get('/', authAdmin, getAllCourts);
 router.post('/', authAdmin, upload.single('image'), createCourt);
 router.put('/:id', authAdmin, upload.single('image'), updateCourt);

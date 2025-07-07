@@ -1,4 +1,4 @@
-// src/pages/admin/courts/create.tsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
@@ -22,16 +22,16 @@ export default function CreateCourtPage() {
         }
       );
 
-      setMessage('✅ Quadra criada com sucesso!');
-      setTimeout(() => router.push('../admin-courts'), 1500); // <-- pathname correto para expo-router
+      setMessage('✅ campo criada com sucesso!');
+      setTimeout(() => router.push('../admin-courts'), 1500);  
     } catch (err: any) {
-      setMessage(err.response?.data?.message || '❌ Erro ao criar quadra.');
+      setMessage(err.response?.data?.message || '❌ Erro ao criar campo.');
     }
   };
 
   return (
     <div style={{ padding: 30 }}>
-      <h2>➕ Criar Nova Quadra</h2>
+      <h2>➕ Criar Nova campo</h2>
       <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
         <div>
           <label>Nome:</label>
@@ -54,7 +54,7 @@ export default function CreateCourtPage() {
           />
         </div>
         <button type="submit" style={{ padding: '10px 20px' }}>
-          Criar Quadra
+          Criar campo
         </button>
         {message && <p style={{ marginTop: 15 }}>{message}</p>}
       </form>

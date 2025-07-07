@@ -5,7 +5,7 @@ type User = {
   id: string;
   username: string;
   email: string;
-  // Adicione mais campos conforme necessário
+  
 };
 
 export function useUsers() {

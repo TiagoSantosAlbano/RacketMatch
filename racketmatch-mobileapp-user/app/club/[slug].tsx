@@ -34,7 +34,7 @@ const clubData: Record<
     location: 'Lisboa',
     image: 'https://example.com/squash.jpg',
     rating: 4.5,
-    fields: ['Quadra A', 'Quadra B'],
+    fields: ['campo A', 'campo B'],
   },
 };
 

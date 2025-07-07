@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ActivityIndicator } from "react-native";
-import { useTenants } from "../shared/hooks/useTentants"; // Ajusta o path conforme a estrutura do teu projeto
+import { useTenants } from "../shared/hooks/useTentants";  
 
 export default function TenantsScreen() {
   const { tenants, loading, error } = useTenants();

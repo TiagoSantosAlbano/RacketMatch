@@ -6,7 +6,7 @@ const getAllUsers = async (req, res) => {
     console.log('🟢 USERS ENCONTRADOS:', users);
     res.json(users);
   } catch (error) {
-    console.error('🔴 ERRO AO BUSCAR USERS:', error);
+    console.error('🔴 ERRO AO procurar USERS:', error);
     res.status(500).json({ message: 'Erro ao encontrar utilizadores.' });
   }
 };

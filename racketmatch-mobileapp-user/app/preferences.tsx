@@ -21,7 +21,6 @@ export default function PreferencesScreen() {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    // Podes carregar preferências salvas aqui se tiveres endpoint
   }, []);
 
   const handleSave = async () => {
@@ -78,7 +77,7 @@ export default function PreferencesScreen() {
           </View>
         </RadioButton.Group>
 
-        <Text style={styles.label}>Lado preferido da quadra</Text>
+        <Text style={styles.label}>Lado preferido da campo</Text>
         <RadioButton.Group
           onValueChange={(newValue) => setPreferredSide(newValue)}
           value={preferredSide}

@@ -5,8 +5,6 @@ import Courts from './Courts';
 import Matches from './Matches';
 import Users from './Users';
 import Payments from './Payments';
-import TenantsPage from './Tenants';
-import FinanceDashboard from './Report';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Dashboard() {
@@ -40,8 +38,7 @@ export default function Dashboard() {
           <Route path="matches" element={<Matches />} />
           <Route path="users" element={<Users />} />
           <Route path="payments" element={<Payments />} />
-          <Route path="finance" element={<FinanceDashboard />} />
-          <Route path="tenants" element={<TenantsPage />} />
+ 
 
           {/* Fallback interno do painel */}
           <Route path="*" element={<Navigate to="courts" replace />} />

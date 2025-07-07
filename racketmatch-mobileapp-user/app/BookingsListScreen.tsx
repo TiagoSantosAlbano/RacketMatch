@@ -40,7 +40,7 @@ export default function BookingsListScreen() {
 
       setBookings(res.data);
     } catch (error: any) {
-      console.error('Erro ao buscar reservas:', error?.response?.data || error);
+      console.error('Erro ao procurar reservas:', error?.response?.data || error);
       setBookings([]);
     } finally {
       setLoading(false);
@@ -52,7 +52,7 @@ export default function BookingsListScreen() {
     fetchBookings();
   }, [fetchBookings]);
 
-  // Cancelar reserva
+
   const handleCancel = async (bookingId: string) => {
     Alert.alert(
       'Cancelar Reserva',

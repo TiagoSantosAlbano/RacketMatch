@@ -4,7 +4,7 @@ const tenantSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String },
   phone: { type: String },
-  commissionRate: { type: Number, default: 15 }, // % comissão personalizada
+  commissionRate: { type: Number, default: 15 },
   createdAt: { type: Date, default: Date.now }
 });
 

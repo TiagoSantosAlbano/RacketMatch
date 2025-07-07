@@ -11,7 +11,7 @@ export default function EditCourtPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
 
-  /* ─────────── BUSCAR DADOS DA QUADRA ─────────── */
+  
   const fetchCourt = async () => {
     try {
       const token = localStorage.getItem('adminToken');
@@ -22,13 +22,13 @@ export default function EditCourtPage() {
       setName(data.name);
       setLocation(data.location);
     } catch {
-      setMessage('❌ Erro ao buscar dados da quadra.');
+      setMessage('❌ Erro ao procurar dados da campo.');
     } finally {
       setLoading(false);
     }
   };
 
-  /* ─────────── ATUALIZAR QUADRA ─────────── */
+  
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -38,14 +38,13 @@ export default function EditCourtPage() {
         { name, location },
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      setMessage('✅ Quadra atualizada!');
+      setMessage('✅ campo atualizada!');
 
-      // ✅ Caminho relativo funciona com expo-router
       setTimeout(() => {
         router.push('../');
       }, 1500);
     } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Erro ao atualizar quadra.');
+      setMessage(err.response?.data?.message || 'Erro ao atualizar campo.');
     }
   };
 
@@ -57,7 +56,7 @@ export default function EditCourtPage() {
 
   return (
     <div style={{ padding: 30 }}>
-      <h2>✏️ Editar Quadra</h2>
+      <h2>✏️ Editar campo</h2>
 
       <form onSubmit={handleUpdate} style={{ maxWidth: 400 }}>
         <label>Nome:</label>

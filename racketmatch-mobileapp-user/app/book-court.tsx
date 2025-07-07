@@ -32,7 +32,7 @@ export default function BookCourtScreen() {
       const res = await axios.get('http://localhost:5000/api/courts');
       setCourts(res.data);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível carregar as quadras. Verifique a sua conexão.');
+      Alert.alert('Erro', 'Não foi possível carregar as campos. Verifique a sua conexão.');
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ export default function BookCourtScreen() {
 
   const handleBooking = async () => {
     if (!selectedCourt) {
-      return Alert.alert('⚠️ Atenção', 'Por favor, selecione uma quadra.');
+      return Alert.alert('⚠️ Atenção', 'Por favor, selecione campo.');
     }
 
     try {
@@ -122,15 +122,15 @@ export default function BookCourtScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <BackButton />
-      <Text style={styles.title}>📅 Reservar uma Quadra</Text>
+      <Text style={styles.title}>📅 Reservar campo</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#43a047" style={{ marginTop: 20 }} />
       ) : (
         <>
-          <Text style={styles.subtitle}>Selecione uma quadra:</Text>
+          <Text style={styles.subtitle}>Selecione campo:</Text>
           {courts.length === 0 ? (
-            <Text style={styles.noCourtsText}>Nenhuma quadra disponível no momento.</Text>
+            <Text style={styles.noCourtsText}>Nenhcampo disponível no momento.</Text>
           ) : (
             courts.map((court) => (
               <Card

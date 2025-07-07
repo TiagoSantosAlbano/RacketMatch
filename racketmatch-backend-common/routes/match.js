@@ -5,7 +5,7 @@ const Notification = require('../models/Notification');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
-// Entrar numa partida
+
 router.post('/:id/join', authMiddleware, async (req, res) => {
   const matchId = req.params.id;
   const userId = req.user.id;
@@ -25,7 +25,7 @@ router.post('/:id/join', authMiddleware, async (req, res) => {
 
     const joiningUser = await User.findById(userId);
 
-    // Criar notificação para o dono da partida
+
     await Notification.create({
       userId: match.createdBy._id,
       message: `${joiningUser.name} juntou-se à sua partida.`,

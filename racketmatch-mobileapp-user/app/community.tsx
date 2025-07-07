@@ -36,7 +36,7 @@ export default function CommunityScreen() {
       const res = await axios.get('http://localhost:5000/api/posts');
       setPosts(res.data);
     } catch (err) {
-      console.error('Erro ao buscar posts:', err);
+      console.error('Erro ao procurar posts:', err);
       Alert.alert('Erro', 'Não foi possível carregar os posts.');
     } finally {
       setLoading(false);

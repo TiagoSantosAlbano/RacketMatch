@@ -4,7 +4,7 @@ const bookingSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   court: { type: mongoose.Schema.Types.ObjectId, ref: 'Court', required: true },
   date: { type: Date, required: true },
-  time: { type: String }, // opcional
+  time: { type: String },
   status: { type: String, enum: ['ativa', 'cancelada'], default: 'ativa' },
 }, {
   timestamps: true,

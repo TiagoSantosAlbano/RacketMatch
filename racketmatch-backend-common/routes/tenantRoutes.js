@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Tenant = require('../models/Tenant');
 
-// Criar Tenant (feito normalmente só pelo super-admin)
+
 router.post('/', async (req, res) => {
   try {
     const { name, email, phone, commissionRate } = req.body;
@@ -11,7 +11,7 @@ router.post('/', async (req, res) => {
       name,
       email,
       phone,
-      commissionRate: commissionRate || 15, // default 15%
+      commissionRate: commissionRate || 15,
     });
 
     await tenant.save();
@@ -22,7 +22,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Listar todos os tenants
 router.get('/', async (req, res) => {
   try {
     const tenants = await Tenant.find();
@@ -32,7 +31,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Buscar Tenant por ID
+
 router.get('/:id', async (req, res) => {
   try {
     const tenant = await Tenant.findById(req.params.id);

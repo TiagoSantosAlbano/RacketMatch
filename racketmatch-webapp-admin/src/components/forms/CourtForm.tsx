@@ -6,6 +6,7 @@ export interface FormValues {
   type: string;
   price?: number;
   image?: File;
+  imageUrl?: string; // Para preview se editar
 }
 
 interface CourtFormProps {
@@ -20,22 +21,36 @@ export function CourtForm({ initialData, onSubmit }: CourtFormProps) {
     type: '',
     price: undefined,
     image: undefined,
+    imageUrl: undefined,
   });
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        image: undefined, // nunca passar string para o input file
+        imageUrl: initialData.imageUrl || (typeof initialData.image === 'string' ? initialData.image : undefined),
+      });
     }
   }, [initialData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'price' ? Number(value) : value,
-    }));
+    const { name, value, type, files } = e.target as HTMLInputElement;
+    if (type === "file") {
+      const file = files && files[0] ? files[0] : undefined;
+      setFormData((prev) => ({
+        ...prev,
+        image: file,
+        imageUrl: file ? URL.createObjectURL(file) : prev.imageUrl,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: name === 'price' ? Number(value) : value,
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -84,6 +99,23 @@ export function CourtForm({ initialData, onSubmit }: CourtFormProps) {
         placeholder="Preço"
         className="input text-black"
       />
+      <div>
+        <input
+          type="file"
+          accept="image/*"
+          name="image"
+          onChange={handleChange}
+          className="input"
+        />
+        {/* Preview da imagem, tanto File quanto url string */}
+        {formData.imageUrl && (
+          <img
+            src={formData.imageUrl}
+            alt="Preview"
+            className="mt-2 w-32 h-24 object-cover rounded border"
+          />
+        )}
+      </div>
       <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
         {initialData ? 'Atualizar' : 'Criar'}
       </button>

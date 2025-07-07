@@ -1,30 +1,17 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Card, Paragraph, Button, Text, Badge } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../context/AuthContext'; // AJUSTA O CAMINHO se necessário
+import { useAuth } from '../context/AuthContext';
 
 const HomeScreen = () => {
   const router = useRouter();
   const { user, loading } = useAuth();
 
   const isPremium = !!user?.isPremium;
-  const userName = user?.name || 'User';
+  const userName = user?.name || 'Utilizador';
 
-  const routes = {
-    premium: '/premium' as const,
-    preferences: '/preferences' as const,
-    bookCourt: '/book-court' as const,
-    openMatch: '/open-match' as const,
-    bookings: '/bookings' as const,
-    community: '/community' as const,
-    profile: '/profile' as const,
-    chat: '/chat' as const,
-    club: (slug: string) => `/club/${slug}` as const,
-  };
-
-  // Mostra loading enquanto o contexto está a carregar
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -34,14 +21,13 @@ const HomeScreen = () => {
     );
   }
 
-  // Se não houver utilizador autenticado, redireciona
   if (!user) {
     setTimeout(() => router.replace('/login'), 100);
     return null;
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }}>
       <View style={styles.header}>
         <View style={styles.nameRow}>
           <Text style={[styles.greeting, isPremium && styles.premiumName]}>
@@ -52,6 +38,7 @@ const HomeScreen = () => {
         {isPremium && <Badge style={styles.premiumBadge}>Premium</Badge>}
       </View>
 
+      {/* Cartão Premium */}
       <Card style={styles.premiumCard}>
         <Card.Content>
           <View style={styles.premiumContent}>
@@ -60,7 +47,7 @@ const HomeScreen = () => {
           </View>
           <Paragraph style={styles.premiumDescription}>Descubra as vantagens do Premium</Paragraph>
           {!isPremium ? (
-            <Button mode="text" style={styles.premiumButton} onPress={() => router.push(routes.premium)}>
+            <Button mode="text" style={styles.premiumButton} onPress={() => router.push('/premium')}>
               {'>'}
             </Button>
           ) : (
@@ -69,43 +56,60 @@ const HomeScreen = () => {
         </Card.Content>
       </Card>
 
+      {/* Preferências */}
       <Card style={styles.preferencesCard}>
         <Card.Content style={styles.preferencesContent}>
           <Icon name="cog" size={20} color="#000" />
-          <Text style={styles.preferencesText}>Editar suas preferências de jogador</Text>
-          <Text style={styles.preferencesSubtext}>Mão dominante, lado da quadra, tipo de jogo...</Text>
-          <Button mode="text" style={styles.preferencesButton} onPress={() => router.push(routes.preferences)}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.preferencesText}>Editar preferências</Text>
+            <Text style={styles.preferencesSubtext}>Mão dominante, lado, tipo de jogo...</Text>
+          </View>
+          <Button mode="text" style={styles.preferencesButton} onPress={() => router.push('/preferences')}>
             {'>'}
           </Button>
         </Card.Content>
       </Card>
 
-      <Text style={styles.sectionTitle}>Jogue seu jogo perfeito</Text>
+      {/* Secção: Jogo */}
+      <Text style={styles.sectionTitle}>Jogue o seu jogo perfeito</Text>
       <View style={styles.matchGrid}>
+
         <Card style={styles.matchCard}>
           <Card.Content style={styles.matchContent}>
-            <Icon name="magnify" size={30} color="#000" />
-            <Text style={styles.matchTitle}>Reservar uma quadra</Text>
-            <Text style={styles.matchDescription}>Se você já sabe com quem vai jogar</Text>
-            <Button mode="contained" style={styles.matchButton} onPress={() => router.push(routes.bookCourt)}>
-              Reservar Agora
+            <View style={styles.rowBetween}>
+              <Icon name="magnify" size={30} color="#000" />
+              <TouchableOpacity onPress={() => router.push('/bookings/create')}>
+                <Icon name="plus-circle" size={28} color="#207c2e" />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.matchTitle}>Reservar um campo</Text>
+            <Text style={styles.matchDescription}>Se já sabe com quem vai jogar</Text>
+            <Button mode="contained" style={styles.matchButton} onPress={() => router.push('/bookings')}>
+              Reservas
             </Button>
           </Card.Content>
         </Card>
 
+        {/* Jogar um jogo aberto */}
         <Card style={styles.matchCard}>
           <Card.Content style={styles.matchContent}>
-            <Icon name="tennis-ball" size={30} color="#000" />
+            <View style={styles.rowBetween}>
+              <Icon name="tennis-ball" size={30} color="#000" />
+              <TouchableOpacity onPress={() => router.push('/create-open-match')}>
+                <Icon name="plus-circle" size={28} color="#207c2e" />
+              </TouchableOpacity>
+            </View>
             <Text style={styles.matchTitle}>Jogar um jogo aberto</Text>
-            <Text style={styles.matchDescription}>Se você está procurando jogadores do seu nível</Text>
-            <Button mode="contained" style={styles.matchButton} onPress={() => router.push(routes.openMatch)}>
+            <Text style={styles.matchDescription}>Procure jogadores do seu nível</Text>
+            <Button mode="contained" style={styles.matchButton} onPress={() => router.push('/open-match')}>
               Encontrar Jogo
             </Button>
           </Card.Content>
         </Card>
       </View>
 
-      <Text style={styles.sectionTitle}>Seus clubes</Text>
+      {/* Secção: Clubes */}
+      <Text style={styles.sectionTitle}>Os seus clubes</Text>
       <View style={styles.matchGrid}>
         <Card style={styles.clubCard}>
           <Card.Content style={styles.clubContent}>
@@ -116,12 +120,11 @@ const HomeScreen = () => {
             />
             <Text style={styles.clubName}>Squash Olaias</Text>
             <Text style={styles.clubLocation}>Lisboa</Text>
-            <Button mode="contained" style={styles.clubButton} onPress={() => router.push(routes.club('squash-olaias'))}>
+            <Button mode="contained" style={styles.clubButton} onPress={() => router.push('/club/squash-olaias')}>
               Visitar
             </Button>
           </Card.Content>
         </Card>
-
         <Card style={styles.clubCard}>
           <Card.Content style={styles.clubContent}>
             <Image
@@ -131,17 +134,18 @@ const HomeScreen = () => {
             />
             <Text style={styles.clubName}>Lemonfit Padel</Text>
             <Text style={styles.clubLocation}>Olaias</Text>
-            <Button mode="contained" style={styles.clubButton} onPress={() => router.push(routes.club('lemonfit-padel'))}>
+            <Button mode="contained" style={styles.clubButton} onPress={() => router.push('/club/lemonfit-padel')}>
               Visitar
             </Button>
           </Card.Content>
         </Card>
       </View>
 
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <Icon name="home" size={25} color="#000" onPress={() => router.push('/home')} />
-        <Icon name="chat" size={25} color="#888" onPress={() => router.push(routes.chat)} />
-        <Icon name="account" size={25} color="#888" onPress={() => router.push(routes.profile)} />
+        <Icon name="chat" size={25} color="#888" onPress={() => router.push('/chat')} />
+        <Icon name="account" size={25} color="#888" onPress={() => router.push('/profile')} />
       </View>
     </ScrollView>
   );
@@ -170,16 +174,17 @@ const styles = StyleSheet.create({
   activeBadge: { marginTop: 10, color: '#28a745', fontWeight: 'bold', textAlign: 'right' },
   preferencesCard: { margin: 15, elevation: 4, borderRadius: 10 },
   preferencesContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  preferencesText: { flex: 1, marginLeft: 10, fontSize: 14, fontWeight: 'bold' },
-  preferencesSubtext: { flex: 1, marginLeft: 10, fontSize: 12, color: '#666' },
+  preferencesText: { fontSize: 14, fontWeight: 'bold' },
+  preferencesSubtext: { fontSize: 12, color: '#666' },
   preferencesButton: { marginLeft: 10 },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', margin: 15, color: '#1A2B3C' },
   matchGrid: { flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 15, marginBottom: 15 },
   matchCard: { width: '48%', elevation: 4, borderRadius: 10 },
-  matchContent: { alignItems: 'center', padding: 15 },
+  matchContent: { alignItems: 'center', padding: 15, width: '100%' },
   matchTitle: { fontSize: 16, fontWeight: 'bold', marginTop: 10 },
   matchDescription: { fontSize: 12, color: '#666', textAlign: 'center', marginTop: 5 },
   matchButton: { marginTop: 10, backgroundColor: '#1A2B3C' },
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' },
   clubCard: {
     width: '48%',
     borderRadius: 10,

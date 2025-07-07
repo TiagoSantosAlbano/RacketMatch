@@ -3,28 +3,28 @@ const router = express.Router();
 const User = require('../models/User');
 const authAdmin = require('../middleware/authAdmin');
 
-// ✅ Listar todos os utilizadores
+
 router.get('/', authAdmin, async (req, res) => {
   try {
-    const users = await User.find().select('-password'); // esconder senha
+    const users = await User.find().select('-password'); 
     res.json(users);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar utilizadores' });
+    res.status(500).json({ error: 'Erro ao procurar utilizadores' });
   }
 });
 
-// ✅ Obter dados de um utilizador específico
+
 router.get('/:id', authAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
     if (!user) return res.status(404).json({ error: 'Utilizador não encontrado' });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar utilizador' });
+    res.status(500).json({ error: 'Erro ao procurar utilizador' });
   }
 });
 
-// ✅ Criar um novo utilizador
+
 router.post('/', authAdmin, async (req, res) => {
   try {
     const { name, email, password, isAdmin } = req.body;
@@ -39,7 +39,7 @@ router.post('/', authAdmin, async (req, res) => {
   }
 });
 
-// ✅ Editar utilizador
+
 router.put('/:id', authAdmin, async (req, res) => {
   try {
     const { name, email, isPremium, isAdmin } = req.body;
@@ -55,7 +55,6 @@ router.put('/:id', authAdmin, async (req, res) => {
   }
 });
 
-// ✅ Remover utilizador
 router.delete('/:id', authAdmin, async (req, res) => {
   try {
     const deleted = await User.findByIdAndDelete(req.params.id);

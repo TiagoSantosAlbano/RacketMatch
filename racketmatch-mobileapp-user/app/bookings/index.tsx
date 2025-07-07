@@ -1,117 +1,136 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
-  Text,
   StyleSheet,
-  ScrollView,
+  View,
+  Text,
+  FlatList,
   ActivityIndicator,
-  RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
-import { Card, Paragraph, Button } from 'react-native-paper';
+import { useFocusEffect, useRouter } from 'expo-router';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import api from '../../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import BackButton from '../../components/BackButton';
-
-interface Booking {
-  _id: string;
-  court: {
-    _id: string;
-    name: string;
-    location: string;
-  };
-  date: string;
-  time?: string;
-  status?: string;
-}
 
 export default function BookingsListScreen() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [reservations, setReservations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
 
-  const fetchBookings = useCallback(async () => {
-    setLoading(true);
+  const fetchReservations = async () => {
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) throw new Error('Token não encontrado. Faça login novamente.');
-
-      const res = await axios.get('http://localhost:5000/api/bookings', {
-        headers: { Authorization: `Bearer ${token}` },
+      setLoading(true);
+      const token = await AsyncStorage.getItem('authToken');
+      const res = await api.get('/bookings', {
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      setBookings(res.data);
-    } catch (error: any) {
-      console.error('Erro ao buscar reservas:', error?.response?.data || error);
-      setBookings([]);
+      setReservations(res.data);
+    } catch {
+      setReservations([]);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    fetchBookings();
-  }, [fetchBookings]);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchReservations();
+    }, [])
+  );
+
+  const renderItem = ({ item }: { item: any }) => (
+    <View style={styles.card}>
+      <Text style={styles.courtName}>
+        <Icon name="tennis" size={17} color="#20876b" /> {item.court?.name || 'Campo'}
+      </Text>
+      <Text style={styles.info}>
+        <Icon name="map-marker" size={15} color="#ea3d59" /> {item.court?.location}
+      </Text>
+      <Text style={styles.info}>
+        <Icon name="calendar" size={15} color="#20876b" />{' '}
+        {item.date?.slice(0, 10)} {item.time}
+      </Text>
+      <Text style={styles.status}>
+        Estado: <Text style={{ fontWeight: 'bold' }}>{item.status}</Text>
+      </Text>
+    </View>
+  );
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => {
-          setRefreshing(true);
-          fetchBookings();
-        }} />
-      }
-      contentContainerStyle={{ paddingBottom: 30 }}
-    >
-      <BackButton />
-      <Text style={styles.title}>Minhas Reservas</Text>
-      <Button mode="outlined" onPress={fetchBookings} style={styles.refreshButton}>
-        Atualizar
-      </Button>
+    <View style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Icon name="arrow-left" size={28} color="#207c2e" />
+      </TouchableOpacity>
 
+      {/* Botão de criar nova reserva */}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => router.push('/bookings/create')}
+      >
+        <Icon name="plus-circle" size={28} color="#207c2e" />
+      </TouchableOpacity>
+      <Text style={styles.title}>As Minhas Reservas</Text>
       {loading ? (
-        <ActivityIndicator size="large" color="#2e7d32" style={{ marginTop: 20 }} />
-      ) : bookings.length === 0 ? (
-        <Text style={styles.noBookingText}>Ainda não tem reservas.</Text>
+        <ActivityIndicator size="large" color="#20876b" style={{ marginTop: 40 }} />
+      ) : reservations.length === 0 ? (
+        <Text style={{ textAlign: 'center', marginTop: 30, color: '#888' }}>
+          Ainda não tens reservas.
+        </Text>
       ) : (
-        bookings.map((booking) => (
-          <Card key={booking._id} style={styles.card}>
-            <Card.Content>
-              <Paragraph style={styles.courtName}>{booking.court.name}</Paragraph>
-              <Text style={styles.courtLocation}>{booking.court.location}</Text>
-              <Text style={styles.date}>
-                📅 {new Date(booking.date).toLocaleString()}
-                {booking.time ? ` às ${booking.time}` : ''}
-              </Text>
-              {booking.status && (
-                <Text style={[styles.status, booking.status === 'cancelada' && styles.statusCanceled]}>
-                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                </Text>
-              )}
-            </Card.Content>
-          </Card>
-        ))
+        <FlatList
+          data={reservations}
+          renderItem={renderItem}
+          keyExtractor={item => item._id}
+          contentContainerStyle={{ padding: 10 }}
+        />
       )}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#e8f5e9' },
-  title: { fontSize: 26, fontWeight: 'bold', color: '#2e7d32', textAlign: 'center', marginBottom: 15 },
-  card: {
-    marginBottom: 16,
+  container: { flex: 1, backgroundColor: '#f6fafe' },
+  backButton: {
+    position: 'absolute',
+    top: 13,
+    left: 13,
+    zIndex: 100,
     backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 2,
-    padding: 6,
+    borderRadius: 18,
+    padding: 4,
+    elevation: 5,
   },
-  courtName: { fontSize: 17, fontWeight: 'bold', color: '#1b5e20' },
-  courtLocation: { fontSize: 14, color: '#666', marginBottom: 6 },
-  date: { fontSize: 15, color: '#388e3c', marginBottom: 2 },
-  status: { fontSize: 14, color: '#2196f3', marginTop: 4, fontWeight: 'bold' },
-  statusCanceled: { color: '#d32f2f' },
-  noBookingText: { color: '#888', textAlign: 'center', fontSize: 16, marginTop: 20 },
-  refreshButton: { alignSelf: 'center', marginVertical: 6 },
+  title: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: '#207c2e',
+    marginLeft: 50, 
+    marginTop: 16,
+    marginBottom: 10,
+    alignSelf: 'flex-start',
+  },
+  card: {
+    backgroundColor: '#fff',
+    marginBottom: 13,
+    borderRadius: 10,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  courtName: { fontSize: 16, fontWeight: 'bold', color: '#0a3535', marginBottom: 4 },
+  info: { fontSize: 14, color: '#222', marginBottom: 3 },
+  status: { fontSize: 14, color: '#555', marginTop: 5 },
+  addButton: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+    zIndex: 99,
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 4,
+    elevation: 5,
+  }
 });
-

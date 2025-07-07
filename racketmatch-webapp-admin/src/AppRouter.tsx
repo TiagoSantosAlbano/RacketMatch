@@ -1,4 +1,4 @@
-// src/AppRouter.tsx
+
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/admin/Login';
 import Register from './pages/admin/Register';

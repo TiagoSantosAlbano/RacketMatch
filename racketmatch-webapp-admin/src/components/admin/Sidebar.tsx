@@ -9,10 +9,7 @@ export default function Sidebar() {
     { path: 'courts', label: 'Courts', icon: '🏟️' },
     { path: 'matches', label: 'Matches', icon: '🎾' },
     { path: 'users', label: 'Users', icon: '👥' },
-    { path: 'payments', label: 'Payments', icon: '💸' },
-    { path: 'finance', label: 'Finance Dashboard', icon: '📊' },
-    { path: 'report', label: 'Financial Report', icon: '📈' },
-    { path: 'tenants', label: 'Tenants', icon: '🏢' },
+    { path: 'bookings', label: 'Bookings', icon: '📝' }, 
   ];
 
   return (
@@ -26,7 +23,7 @@ export default function Sidebar() {
         <nav className="flex flex-col gap-3">
           {menu.map((item) => {
             const fullPath = `/dashboard/${item.path}`;
-            const isActive = location.pathname === fullPath;
+            const isActive = location.pathname.startsWith(fullPath);
             return (
               <Link
                 key={item.path}
@@ -44,14 +41,15 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* BOTÃO LUA FIXADO EM BAIXO */}
+      {/* BOTÃO DARK MODE FIXADO EM BAIXO */}
       <div className="mt-6">
         <button
           onClick={toggleTheme}
           className="w-full text-left px-4 py-2 rounded-md text-white hover:text-yellow-400 transition text-xl"
           aria-label="Alternar Modo Escuro"
+          aria-pressed="false"
         >
-          🌙
+          🌙 Modo Escuro
         </button>
       </div>
     </aside>

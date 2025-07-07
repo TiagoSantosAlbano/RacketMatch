@@ -3,7 +3,7 @@ const router = express.Router();
 const Review = require('../models/Review');
 const authMiddleware = require('../middleware/auth');
 
-// Criar nova review
+
 router.post('/', authMiddleware, async (req, res) => {
   const { clubId, content, rating } = req.body;
 

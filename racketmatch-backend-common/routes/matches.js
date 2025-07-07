@@ -3,13 +3,13 @@ const router = express.Router();
 const Match = require('../models/Match');
 const authMiddleware = require('../middleware/auth');
 
-// Criar uma nova partida
+
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const matchData = {
       ...req.body,
       createdBy: req.user.id,
-      players: [req.user.id], // criador já entra
+      players: [req.user.id], 
     };
 
     const newMatch = await Match.create(matchData);
@@ -20,7 +20,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Obter todas as partidas com vagas (menos de 4 jogadores)
+
 router.get('/', async (req, res) => {
   try {
     const matches = await Match.find()
@@ -30,8 +30,8 @@ router.get('/', async (req, res) => {
 
     res.json(matches);
   } catch (error) {
-    console.error('Erro ao buscar partidas:', error);
-    res.status(500).json({ message: 'Erro ao buscar partidas' });
+    console.error('Erro ao procurar partidas:', error);
+    res.status(500).json({ message: 'Erro ao procurar partidas' });
   }
 });
 

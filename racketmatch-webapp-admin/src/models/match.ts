@@ -2,7 +2,7 @@
 
 export interface Match {
   _id?: string;  // ID gerado pelo MongoDB
-  court_id: string;  // ID da quadra associada
+  court_id: string;  // ID da campo associada
   players: string[];  // array de IDs dos jogadores
   match_date: string;  // data no formato ISO: 'YYYY-MM-DD'
   match_time: string;  // hora no formato: 'HH:mm'

@@ -11,9 +11,9 @@ export default function Index() {
     const checkAuth = async () => {
       try {
         const token = await AsyncStorage.getItem('authToken');
-        console.log(token); // Corrigido!
+        console.log(token);
         if (token) {
-          router.replace('/home'); // Ou '/' se o teu HomeScreen for no root
+          router.replace('/home'); 
         } else {
           router.replace('/login');
         }
@@ -35,7 +35,7 @@ export default function Index() {
     );
   }
 
-  return null; // já redirecionou
+  return null;  
 }
 
 const styles = StyleSheet.create({

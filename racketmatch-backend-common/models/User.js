@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name:           { type: String, required: true },
   email:          { type: String, required: true, unique: true },
-  password:       { type: String, required: true },
+  password:       { type: String, required: true, select: false },
   skill_level:    { type: Number, required: true },
   isPremium:      { type: Boolean, default: false },
   premiumSince:   { type: Date },
@@ -19,5 +19,12 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.index({ location: '2dsphere' });
+
+
+userSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
 
 module.exports = mongoose.model('User', userSchema);

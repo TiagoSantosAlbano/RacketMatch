@@ -1,43 +1,73 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, FlatList, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import api from '../config/api';
 
 const NotificationsScreen = () => {
   const router = useRouter();
 
-  const notifications = [
-    { id: '1', message: 'Novo jogo marcado!', time: 'Hoje às 10:30' },
-    { id: '2', message: 'Reserva de campo confirmada', time: 'Ontem' },
-    { id: '3', message: 'João Silva enviou uma mensagem', time: '2 dias atrás' },
-  ];
+  const [notifications, setNotifications] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  const renderNotification = ({ item }: { item: { id: string; message: string; time: string } }) => (
+  React.useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/notifications'); 
+        setNotifications(response.data || []);
+      } catch (err) {
+        setNotifications([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
+  const renderNotification = ({ item }: { item: any }) => (
     <View style={styles.notificationItem}>
-      <Text style={styles.notificationMessage}>{item.message}</Text>
-      <Text style={styles.notificationTime}>{item.time}</Text>
+      <Text style={styles.notificationMessage}>{item.text || item.message}</Text>
+      <Text style={styles.notificationTime}>
+        {formatTime(item.createdAt || item.time)}
+      </Text>
     </View>
   );
 
+  function formatTime(time: string) {
+    if (!time) return '';
+    const date = new Date(time);
+    return date.toLocaleDateString('pt-PT') + ' ' + date.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+  }
+
   return (
     <View style={styles.container}>
+      {/* Header igual ao chat */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/home')}>
+          <Icon name="arrow-left" size={26} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Notificações</Text>
+      </View>
+
+      {/* Tabs iguais ao chat */}
       <View style={styles.tabBar}>
         <TouchableOpacity style={styles.tabActive}>
           <Text style={styles.tabTextActive}>Notificações</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.tab}
-          onPress={() => router.push('/chat')}
-        >
+        <TouchableOpacity style={styles.tab} onPress={() => router.replace('/chat')}>
           <Text style={styles.tabText}>Conversas</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
-        {notifications.length > 0 ? (
+        {loading ? (
+          <ActivityIndicator color="#2E4A3D" size="large" />
+        ) : notifications.length > 0 ? (
           <FlatList
             data={notifications}
             renderItem={renderNotification}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
             style={styles.notificationList}
           />
         ) : (
@@ -52,35 +82,46 @@ const NotificationsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F7FA',
-  },
-  tabBar: {
+  container: { flex: 1, backgroundColor: '#F5F7FA' },
+  header: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 10,
+    alignItems: 'center',
     backgroundColor: '#2E4A3D',
+    height: 54,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
+  backButton: {
+    marginRight: 10,
+    padding: 8,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 2,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: '#2E4A3D',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    justifyContent: 'center',
+  },
   tab: {
     padding: 10,
+    marginHorizontal: 8,
   },
   tabActive: {
     padding: 10,
     borderBottomWidth: 2,
     borderBottomColor: '#A8D5BA',
+    marginHorizontal: 8,
   },
-  tabText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  tabTextActive: {
-    color: '#A8D5BA',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  tabText: { color: '#fff', fontSize: 16 },
+  tabTextActive: { color: '#A8D5BA', fontSize: 16, fontWeight: 'bold' },
   content: {
     flex: 1,
     padding: 20,

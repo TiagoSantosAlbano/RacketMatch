@@ -1,4 +1,4 @@
-// routes/adminDashboard.js
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
@@ -6,7 +6,7 @@ const Match = require('../models/Match');
 const Court = require('../models/Court');
 const Booking = require('../models/Booking');
 const Post = require('../models/Post');
-const authAdmin = require('../middleware/authAdmin'); // Middleware que garante admin
+const authAdmin = require('../middleware/authAdmin'); 
 
 router.get('/dashboard', authAdmin, async (req, res) => {
   try {

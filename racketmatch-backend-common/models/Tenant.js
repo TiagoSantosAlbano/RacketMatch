@@ -14,7 +14,7 @@ const tenantSchema = new mongoose.Schema({
   commissionRate: { 
     type: Number, 
     default: 15 
-  }, // Cada tenant pode ter a sua própria comissão (ex: 15%, 10%, etc)
+  }, 
   createdAt: { 
     type: Date, 
     default: Date.now 

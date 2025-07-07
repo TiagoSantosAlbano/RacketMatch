@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const Admin = require('../models/Admin');
 const authAdmin = require('../middleware/authAdmin');
 
-// 🔑 LOGIN
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -41,7 +41,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ✍️ REGISTER (apenas se ainda não existir admin)
+
 router.post('/auth/register', async (req, res) => {
   try {
     const existingAdmins = await Admin.countDocuments();
@@ -62,7 +62,7 @@ router.post('/auth/register', async (req, res) => {
   }
 });
 
-// ✅ Verificação se já existe um admin
+
 router.get('/exists', async (req, res) => {
   try {
     const count = await Admin.countDocuments();
@@ -73,7 +73,7 @@ router.get('/exists', async (req, res) => {
   }
 });
 
-// ✅ Rota protegida de exemplo
+
 router.get('/protected', authAdmin, (req, res) => {
   res.json({ message: 'Acesso autorizado', user: req.admin });
 });

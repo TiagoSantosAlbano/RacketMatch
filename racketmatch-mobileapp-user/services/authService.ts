@@ -38,14 +38,14 @@ export interface AuthResponse {
   user?: User;
 }
 
-// 🟢 Registar novo utilizador
+
 export async function registerUser(data: RegisterPayload): Promise<AuthResponse> {
   try {
     const response = await api.post('/users/register', {
       name: data.name,
       email: data.email,
       password: data.password,
-      skill_level: data.skillLevel, // ✅ backend espera snake_case
+      skill_level: data.skillLevel, 
       preferredLocations: data.preferredLocations,
       preferredTimes: data.preferredTimes,
       location: data.location,
@@ -59,7 +59,7 @@ export async function registerUser(data: RegisterPayload): Promise<AuthResponse>
   }
 }
 
-// 🔐 Login do utilizador
+
 export async function loginUser(data: LoginPayload): Promise<AuthResponse> {
   try {
     const response = await api.post('/users/login', data);

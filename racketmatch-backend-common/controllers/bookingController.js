@@ -2,16 +2,16 @@ const Booking = require('../models/Booking');
 
 const createBooking = async (req, res) => {
   try {
-    const { courtId, date, time } = req.body;
-    const userId = req.user.id;
+    const { court, date, time } = req.body;
+    const userId = req.user._id; 
 
-    if (!courtId || !date) {
-      return res.status(400).json({ message: 'Campo quadra e data são obrigatórios.' });
+    if (!court || !date) {
+      return res.status(400).json({ message: 'Campos campo e data são obrigatórios.' });
     }
 
     const newBooking = new Booking({
       userId,
-      court: courtId,
+      court,
       date,
       time,
       status: 'ativa'
@@ -19,6 +19,7 @@ const createBooking = async (req, res) => {
 
     await newBooking.save();
     await newBooking.populate('court');
+    await newBooking.populate('userId', 'name email'); 
 
     res.status(201).json(newBooking);
   } catch (error) {
@@ -29,18 +30,17 @@ const createBooking = async (req, res) => {
 
 const getUserBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ userId: req.user.id })
+    const bookings = await Booking.find({ userId: req.user._id })
       .populate('court')
       .sort({ date: -1 });
 
     res.json(bookings);
   } catch (error) {
-    console.error('Erro ao buscar reservas:', error);
+    console.error('Erro ao procurar reservas:', error);
     res.status(500).json({ message: 'Erro no servidor.' });
   }
 };
 
-// Para admin/debug: buscar todas as reservas
 const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
@@ -49,16 +49,15 @@ const getAllBookings = async (req, res) => {
       .sort({ date: -1 });
     res.json(bookings);
   } catch (error) {
-    console.error('Erro ao buscar todas as reservas:', error);
+    console.error('Erro ao procurar todas as reservas:', error);
     res.status(500).json({ message: 'Erro no servidor.' });
   }
 };
 
-// Cancelar reserva
 const cancelBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
     const booking = await Booking.findOne({ _id: id, userId });
 
     if (!booking) {

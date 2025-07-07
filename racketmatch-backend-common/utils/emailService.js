@@ -1,16 +1,16 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Criação do transporter com dados do .env
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_FROM,           // e.g. teuemail.racketmatch@gmail.com
-    pass: process.env.EMAIL_PASS,           // palavra-passe ou App Password do Gmail
+    user: process.env.EMAIL_FROM,           
+    pass: process.env.EMAIL_PASS,           
   },
 });
 
-// Função para envio do código de verificação 2FA
+
 const sendVerificationCode = async (to, code) => {
   const mailOptions = {
     from: `"RacketMatch" <${process.env.EMAIL_FROM}>`,

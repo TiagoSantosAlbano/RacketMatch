@@ -8,7 +8,7 @@ const BackButton = () => {
   const router = useRouter();
 
   return (
-    <TouchableOpacity style={styles.back} onPress={() => router.back()}>
+    <TouchableOpacity style={styles.back} onPress={() => router.replace('/home')}>
       <Icon name="arrow-left" size={24} color="#2e7d32" />
     </TouchableOpacity>
   );

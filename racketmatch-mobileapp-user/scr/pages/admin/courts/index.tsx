@@ -16,14 +16,14 @@ export default function CourtListPage() {
       });
       setCourts(res.data);
     } catch (err) {
-      console.error('Erro ao buscar quadras', err);
-      setMessage('❌ Erro ao carregar quadras.');
+      console.error('Erro ao procurar campos', err);
+      setMessage('❌ Erro ao carregar campos.');
     }
   };
 
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem('adminToken');
-    const confirm = window.confirm('Tens a certeza que queres apagar esta quadra?');
+    const confirm = window.confirm('Tens a certeza que queres apagar esta campo?');
     if (!confirm) return;
 
     setLoading(true);
@@ -31,11 +31,11 @@ export default function CourtListPage() {
       await axios.delete(`http://localhost:5000/api/admin/courts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setMessage('✅ Quadra removida com sucesso!');
+      setMessage('✅ campo removida com sucesso!');
       setCourts((prev) => prev.filter((court: any) => court._id !== id));
     } catch (err) {
       console.error(err);
-      setMessage('❌ Erro ao apagar quadra.');
+      setMessage('❌ Erro ao apagar campo.');
     } finally {
       setLoading(false);
     }
@@ -47,13 +47,13 @@ export default function CourtListPage() {
 
   return (
     <div style={{ padding: 30 }}>
-      <h2>🏟️ Gestão de Quadras</h2>
+      <h2>🏟️ Gestão de campos</h2>
 
       <button
         onClick={() => router.push('./edit/create')}
         style={{ marginBottom: 20 }}
       >
-        ➕ Nova Quadra
+        ➕ Nova campo
       </button>
 
       {message && <p style={{ color: 'green' }}>{message}</p>}

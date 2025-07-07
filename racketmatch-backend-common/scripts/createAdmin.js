@@ -2,14 +2,14 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Admin = require('../models/Admin');
 
-// Verifica se a URI foi carregada
+
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
   console.error('❌ MONGO_URI não definido no .env');
   process.exit(1);
 }
 
-// Conectar ao MongoDB
+
 mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log('📦 Ligado ao MongoDB');
@@ -23,7 +23,7 @@ mongoose.connect(MONGO_URI)
     const newAdmin = new Admin({
       name: 'Admin Principal',
       email: 'admin@racketmatch.com',
-      password: 'admin123', // ⚠️ Recomendado encriptar com bcrypt antes de usar em produção
+      password: 'admin123', 
     });
 
     await newAdmin.save();

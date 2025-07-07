@@ -20,7 +20,7 @@ const VerifyCode = () => {
       const { token } = res.data;
       localStorage.setItem('adminToken', token);
 
-      // ✅ Redireciona para a dashboard do admin (rota válida)
+     
       router.push('../dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Código incorreto');

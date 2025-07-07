@@ -1,4 +1,5 @@
 const paypal = require('@paypal/checkout-server-sdk');
+const Match = require('../models/Match');
 const User = require('../models/User');
 
 function environment() {
@@ -11,9 +12,9 @@ function client() {
   return new paypal.core.PayPalHttpClient(environment());
 }
 
-// 1. Rota para criar pagamento e devolver approvalUrl
+
 exports.createPayment = async (req, res) => {
-  const { userId } = req.body; // Envia isto do frontend
+  const { matchId, userId, amount } = req.body;
   const request = new paypal.orders.OrdersCreateRequest();
   request.prefer("return=representation");
   request.requestBody({
@@ -21,40 +22,44 @@ exports.createPayment = async (req, res) => {
     purchase_units: [{
       amount: {
         currency_code: "EUR",
-        value: "3.99"
+        value: amount.toFixed(2)
       }
     }],
     application_context: {
-      return_url: `${process.env.PAYPAL_RETURN_URL}?userId=${userId}`,
+      return_url: `${process.env.PAYPAL_RETURN_URL}?matchId=${matchId}&userId=${userId}`,
       cancel_url: process.env.PAYPAL_CANCEL_URL
     }
   });
   try {
     const order = await client().execute(request);
     const approvalUrl = order.result.links.find(link => link.rel === "approve").href;
-    res.json({ approvalUrl });
+    res.json({ orderId: order.result.id, approvalUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// 2. Rota chamada pelo PayPal após o pagamento (return_url)
+
 exports.capturePayment = async (req, res) => {
-  const { token, userId } = req.query;
+  const { orderId, matchId, userId } = req.query;
   try {
-    const request = new paypal.orders.OrdersCaptureRequest(token);
+    const request = new paypal.orders.OrdersCaptureRequest(orderId);
     request.requestBody({});
     await client().execute(request);
 
-    // Marca o utilizador como premium!
-    await User.findByIdAndUpdate(userId, {
-      isPremium: true,
-      premiumSince: new Date()
-    });
 
-    // Redireciona de volta para o mobile ou mostra mensagem
-    res.send("Pagamento efetuado! Podes fechar esta janela e voltar à app.");
+    const match = await Match.findById(matchId);
+    if (!match.paidPlayers.includes(userId)) {
+      match.paidPlayers.push(userId);
+      await match.save();
+    }
+
+
+    if (match.paidPlayers.length === match.players.length) {
+    }
+
+    res.json({ success: true, message: "Pagamento efetuado!" });
   } catch (err) {
-    res.status(500).send("Erro ao capturar pagamento.");
+    res.status(500).json({ error: "Erro ao capturar pagamento." });
   }
 };

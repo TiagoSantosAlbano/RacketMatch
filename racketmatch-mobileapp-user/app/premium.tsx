@@ -26,7 +26,7 @@ export default function PremiumScreen() {
           setIsPremium(false);
         }
       } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
+        console.error('Erro ao procurar dados do usuário:', error);
         setIsPremium(false);
       } finally {
         setLoading(false);

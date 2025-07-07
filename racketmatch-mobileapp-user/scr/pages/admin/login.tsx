@@ -1,4 +1,4 @@
-// src/pages/admin/login.tsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
@@ -17,7 +17,7 @@ export default function AdminLogin() {
     try {
       await axios.post('http://localhost:5000/api/admin/login', { email, password });
 
-      // ✅ Caminho relativo válido dentro de /admin
+      
       router.push('../verify-code');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Falha no login');

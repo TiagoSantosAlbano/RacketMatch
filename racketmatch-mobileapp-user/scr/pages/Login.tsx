@@ -29,9 +29,9 @@ export default function LoginPage() {
         code,
       });
 
-      localStorage.setItem('adminToken', res.data.token); // armazenas corretamente
+      localStorage.setItem('adminToken', res.data.token); 
       setMessage('✅ Login realizado com sucesso!');
-      window.location.href = '/admin/dashboard'; // Redireciona
+      window.location.href = '/admin/dashboard'; 
     } catch (err: any) {
       setMessage(err?.response?.data?.message || 'Erro ao verificar código');
     }

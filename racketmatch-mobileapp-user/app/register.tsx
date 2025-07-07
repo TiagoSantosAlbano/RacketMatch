@@ -46,7 +46,7 @@ export default function RegisterScreen() {
       name,
       email,
       password,
-      skillLevel: parseInt(skillLevel), // ✅ CORRETO
+      skillLevel: parseInt(skillLevel), 
       preferredLocations: [preferredLocations],
       preferredTimes: [preferredTimes],
       location: {

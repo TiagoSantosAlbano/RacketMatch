@@ -3,10 +3,9 @@ const router = express.Router();
 const Payment = require('../models/Payment');
 const attachTenantId = require('../middleware/attachTenantId');
 
-// Aplica o middleware de Tenant em todas as rotas deste router
+
 router.use(attachTenantId);
 
-// Criar novo pagamento (já com tenantId)
 router.post('/', async (req, res) => {
   try {
     const {
@@ -23,7 +22,7 @@ router.post('/', async (req, res) => {
     const clubRevenue = totalPrice - commission;
 
     const payment = new Payment({
-      tenantId: req.tenantId, // 🎯 aqui está o tenantId
+      tenantId: req.tenantId, 
       approvedBy,
       user,
       court,
@@ -43,7 +42,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Listar todos os pagamentos deste tenant
+
 router.get('/', async (req, res) => {
   try {
     const payments = await Payment.find({ tenantId: req.tenantId })
@@ -57,7 +56,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Obter pagamento específico deste tenant
+
 router.get('/:id', async (req, res) => {
   try {
     const payment = await Payment.findOne({ _id: req.params.id, tenantId: req.tenantId })

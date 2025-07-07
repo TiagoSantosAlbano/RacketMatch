@@ -4,7 +4,7 @@ const Post = require('../models/Post');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
-// Criar novo post
+
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const post = new Post({
@@ -22,7 +22,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Listar todos os posts
+
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find()
@@ -31,8 +31,8 @@ router.get('/', async (req, res) => {
 
     res.json(posts);
   } catch (error) {
-    console.error('Erro ao buscar posts:', error);
-    res.status(500).json({ error: 'Erro ao buscar posts' });
+    console.error('Erro ao procurar posts:', error);
+    res.status(500).json({ error: 'Erro ao procurar posts' });
   }
 });
 

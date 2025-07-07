@@ -6,9 +6,11 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+
 router.get('/ping', (req, res) => {
   res.send('✅ Rota GET /ping ativa');
 });
+
 
 router.post('/register', async (req, res) => {
   try {
@@ -67,6 +69,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -107,9 +110,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/me', async (req, res) => {
+
+router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findOne();
+    const user = req.user;
     if (!user) return res.status(404).json({ message: 'Utilizador não encontrado.' });
 
     res.json({
@@ -125,14 +129,15 @@ router.get('/me', async (req, res) => {
       lastSeen: user.lastSeen,
     });
   } catch (error) {
-    console.error('❌ Erro ao buscar utilizador:', error);
-    res.status(500).json({ message: 'Erro ao buscar utilizador.' });
+    console.error('❌ Erro ao procurar utilizador:', error);
+    res.status(500).json({ message: 'Erro ao procurar utilizador.' });
   }
 });
 
+
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
-    if (!req.user || String(req.user._id) !== String(req.params.id)) {
+    if (!req.user._id.equals(req.params.id)) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
     const user = await User.findById(req.params.id);
@@ -150,14 +155,15 @@ router.get('/:id', authMiddleware, async (req, res) => {
       lastSeen: user.lastSeen,
     });
   } catch (error) {
-    console.error('❌ Erro ao buscar utilizador por ID:', error);
+    console.error('❌ Erro ao procurar utilizador por ID:', error);
     res.status(500).json({ message: 'Erro no servidor.' });
   }
 });
 
+
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    if (!req.user || String(req.user._id) !== String(req.params.id)) {
+    if (!req.user._id.equals(req.params.id)) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
     const { name, skill_level, preferredLocations, preferredTimes } = req.body;
@@ -204,9 +210,10 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    if (!req.user || String(req.user._id) !== String(req.params.id)) {
+    if (!req.user._id.equals(req.params.id)) {
       return res.status(403).json({ message: 'Acesso negado.' });
     }
     await User.findByIdAndDelete(req.params.id);
@@ -216,6 +223,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Erro ao eliminar utilizador.' });
   }
 });
+
 
 router.post('/:id/activate-premium', async (req, res) => {
   try {

@@ -28,11 +28,11 @@ export default function AdminLogin() {
       const res = await axios.post('http://localhost:5000/api/admin-auth/verify-2fa', { email, code });
       const token = res.data.token;
 
-      // ✅ Guarda o token no AsyncStorage
+      
       await AsyncStorage.setItem('adminToken', token);
 
       Alert.alert('Sucesso', 'Login feito com sucesso!');
-      router.replace('/'); // Redireciona para index.tsx e substitui o histórico
+      router.replace('/');
     } catch (err: any) {
       console.error('Erro na verificação 2FA:', err);
       Alert.alert('Erro', err.response?.data?.message || 'Código inválido ou expirado.');
